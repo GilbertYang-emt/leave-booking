@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>填假系統</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh;}
+.container{max-width:720px;margin:0 auto;padding:20px 16px;}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+h1{font-size:20px;font-weight:600;}
+.sync-info{font-size:12px;color:#888;display:flex;align-items:center;gap:6px;}
+.dot{width:8px;height:8px;border-radius:50%;background:#4ade80;}
+.dot.syncing{background:#fbbf24;animation:pulse 1s infinite;}
+.dot.error{background:#f87171;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+.tabs{display:flex;gap:4px;background:#e8e8e2;border-radius:12px;padding:4px;margin-bottom:20px;}
+.tab{flex:1;padding:8px;font-size:14px;cursor:pointer;border:none;background:none;color:#666;border-radius:8px;font-weight:500;}
+.tab.active{background:#fff;color:#1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
+
+.card{background:#fff;border-radius:14px;padding:16px 20px;margin-bottom:12px;border:1px solid #ebebeb;}
+.section{margin-bottom:20px;}
+.label{font-size:13px;color:#888;margin-bottom:8px;font-weight:500;}
+
+.person-row{display:flex;align-items:center;gap:10px;}
+.rank{width:28px;height:28px;border-radius:50%;background:#f0f0ea;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#666;flex-shrink:0;}
+.pname{flex:1;font-size:15px;font-weight:500;}
+.ps{font-size:12px;padding:3px 10px;border-radius:20px;font-weight:500;}
+.ps-wait{background:#f0f0ea;color:#999;}
+.ps-now{background:#dcfce7;color:#16a34a;}
+.ps-done{background:#dbeafe;color:#1d4ed8;}
+
+.btn-icon{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;color:#aaa;border-radius:8px;font-size:16px;}
+.btn-icon:hover{background:#f5f5f0;color:#333;}
+.btn{padding:8px 16px;font-size:13px;border:1px solid #ddd;border-radius:10px;background:#fff;cursor:pointer;color:#555;font-weight:500;}
+.btn:hover{background:#f5f5f0;}
+.btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+.btn-primary:hover{background:#333;}
+.btn-primary:disabled{opacity:0.35;cursor:not-allowed;}
+.btn-danger{border-color:#fca5a5;color:#dc2626;}
+.btn-danger:hover{background:#fef2f2;}
+.btn-excel{border-color:#6ee7b7;color:#059669;}
+.btn-excel:hover{background:#f0fdf4;}
+
+.add-row{display:flex;gap:8px;margin-top:8px;}
+.add-row input{flex:1;}
+input[type=text],input[type=number],select{padding:8px 12px;border:1px solid #e0e0e0;border-radius:10px;font-size:14px;font-family:inherit;background:#fff;width:100%;}
+input:focus,select:focus{outline:none;border-color:#999;}
+
+.info-box{background:#f5f5f0;border-radius:10px;padding:12px 16px;font-size:14px;color:#666;margin-bottom:16px;}
+.info-highlight{border-left:3px solid #16a34a;color:#16a34a;background:#f0fdf4;font-weight:500;}
+
+.month-nav{display:flex;align-items:center;gap:12px;}
+.month-nav span{flex:1;text-align:center;font-weight:600;font-size:16px;}
+
+.batch-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
+.batch-row span{font-size:13px;color:#888;}
+
+.quota-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.qh{font-size:11px;color:#bbb;text-align:center;padding:4px 0;}
+.quota-cell{border-radius:8px;border:1px solid #ebebeb;padding:4px;display:flex;flex-direction:column;align-items:center;gap:2px;background:#fff;}
+.quota-cell.empty{border:none;background:none;}
+.ql{font-size:10px;color:#bbb;}
+.qbtns{display:flex;gap:2px;align-items:center;}
+.qbtn{width:20px;height:20px;border:1px solid #e0e0e0;border-radius:5px;background:none;cursor:pointer;font-size:12px;color:#888;display:flex;align-items:center;justify-content:center;}
+.qbtn:hover{background:#f5f5f0;}
+.qval{font-size:14px;font-weight:600;min-width:16px;text-align:center;}
+
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.dh{font-size:11px;color:#bbb;text-align:center;padding:4px 0;}
+.day{border-radius:10px;border:1px solid #ebebeb;display:flex;flex-direction:column;align-items:center;padding:4px 2px;min-height:62px;cursor:default;}
+.day.empty{border:none;}
+.day.avail{background:#fff;cursor:pointer;}
+.day.avail:hover{border-color:#999;background:#f9f9f9;}
+.day.sel{background:#dbeafe;border-color:#3b82f6;cursor:pointer;}
+.day.full{background:#f0fdf4;border-color:#bbf7d0;}
+.day.locked{background:#f5f5f0;opacity:0.45;}
+.day.zero{opacity:0.2;}
+.dnum{font-weight:600;font-size:13px;}
+.dslot{font-size:10px;color:#aaa;margin-top:1px;}
+.dnames{display:flex;flex-direction:column;align-items:center;gap:1px;margin-top:2px;width:100%;}
+.nchip{font-size:9px;padding:1px 3px;border-radius:4px;background:#dbeafe;color:#1d4ed8;width:90%;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+.legend{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;}
+.legend span{font-size:12px;color:#888;display:flex;align-items:center;gap:4px;}
+.dot-sq{width:10px;height:10px;border-radius:3px;display:inline-block;}
+
+.confirm-area{margin-top:16px;}
+.selected-display{font-size:15px;font-weight:500;padding:10px 0;color:#1a1a1a;}
+.selected-display.empty{color:#bbb;font-weight:400;font-size:14px;}
+
+.history-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0ea;}
+.history-row:last-child{border-bottom:none;}
+.tnum{font-size:12px;color:#bbb;min-width:28px;}
+
+.metric{background:#f5f5f0;border-radius:10px;padding:14px;}
+.metric-label{font-size:12px;color:#888;margin-bottom:4px;}
+.metric-val{font-size:26px;font-weight:600;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+
+.loading{text-align:center;padding:60px 20px;color:#aaa;font-size:15px;}
+.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>📅 填假系統</h1>
+    <div class="sync-info">
+      <div class="dot" id="sync-dot"></div>
+      <span id="sync-label">連線中…</span>
+    </div>
+  </header>
+  <div id="app"><div class="loading"><i class="ti ti-loader" style="font-size:24px;"></i><br>載入中…</div></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const SUPABASE_URL = 'https://qndharkdfljpimotwxyw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_ChkGurobbu_stwogESrIgA_W6mQqaBQ';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const DAYS_TW = ['日','一','二','三','四','五','六'];
+const MONTHS_TW = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+
+const now = new Date();
+let state = {
+  tab: 'admin',
+  people: [],
+  year: now.getFullYear(),
+  month: now.getMonth(),
+  dailyMax: {},
+  bookings: {},
+  turnIndex: 0,
+  history: [],
+  selectedDay: null,
+  loading: true,
+};
+
+function setSyncStatus(status){
+  const dot = document.getElementById('sync-dot');
+  const label = document.getElementById('sync-label');
+  if(!dot) return;
+  dot.className = 'dot' + (status==='syncing'?' syncing':status==='error'?' error':'');
+  label.textContent = status==='ok'?'已同步':status==='syncing'?'同步中…':'連線失敗';
+}
+
+async function loadFromDB(){
+  setSyncStatus('syncing');
+  try {
+    const {data: settings} = await sb.from('settings').select('*');
+    if(settings){
+      for(const row of settings){
+        if(row.key==='people') state.people = row.value;
+        if(row.key==='dailyMax') state.dailyMax = row.value;
+        if(row.key==='turnIndex') state.turnIndex = row.value;
+        if(row.key==='year') state.year = row.value;
+        if(row.key==='month') state.month = row.value;
+      }
+    }
+    if(state.people.length===0) state.people=['張小明','李美玲','王大偉','陳雅琪','林志豪'];
+
+    const {data: bookings} = await sb.from('bookings').select('*');
+    state.bookings = {};
+    state.history = [];
+    if(bookings){
+      for(const b of bookings){
+        const k = `${b.year}-${b.month}-${b.day}`;
+        if(!state.bookings[k]) state.bookings[k]=[];
+        state.bookings[k].push(b.person_index);
+        state.history.push({turn:b.turn_number, pi:b.person_index, y:b.year, m:b.month, d:b.day, id:b.id});
+      }
+      state.history.sort((a,b2)=>a.turn-b2.turn);
+    }
+    state.loading = false;
+    setSyncStatus('ok');
+  } catch(e){
+    setSyncStatus('error');
+    state.loading = false;
+  }
+  render();
+}
+
+async function saveSetting(key, value){
+  await sb.from('settings').upsert({key, value, updated_at: new Date().toISOString()});
+}
+
+async function saveAllSettings(){
+  setSyncStatus('syncing');
+  await Promise.all([
+    saveSetting('people', state.people),
+    saveSetting('dailyMax', state.dailyMax),
+    saveSetting('turnIndex', state.turnIndex),
+    saveSetting('year', state.year),
+    saveSetting('month', state.month),
+  ]);
+  setSyncStatus('ok');
+}
+
+function getDIM(y,m){ return new Date(y,m+1,0).getDate(); }
+function getFD(y,m){ return new Date(y,m,1).getDay(); }
+function bk(y,m,d){ return `${y}-${m}-${d}`; }
+function getDM(y,m,d){ const k=bk(y,m,d); return state.dailyMax[k]!==undefined?state.dailyMax[k]:1; }
+function setDM(y,m,d,v){ state.dailyMax[bk(y,m,d)]=Math.max(0,v); }
+function getBookings(y,m,d){ return state.bookings[bk(y,m,d)]||[]; }
+function countBooked(y,m,d){ return getBookings(y,m,d).length; }
+function currentFillerIdx(){ return state.turnIndex % state.people.length; }
+function currentFiller(){ return state.people[currentFillerIdx()]; }
+
+async function confirmFill(){
+  const d = state.selectedDay;
+  if(d===null) return;
+  const pi = currentFillerIdx();
+  const turn = state.turnIndex + 1;
+  setSyncStatus('syncing');
+  try {
+    const {data, error} = await sb.from('bookings').insert({
+      year: state.year, month: state.month, day: d,
+      person_index: pi, turn_number: turn
+    }).select();
+    if(error) throw error;
+    const k = bk(state.year, state.month, d);
+    if(!state.bookings[k]) state.bookings[k]=[];
+    state.bookings[k].push(pi);
+    state.history.push({turn, pi, y:state.year, m:state.month, d, id:data[0].id});
+    state.turnIndex++;
+    state.selectedDay=null;
+    await saveAllSettings();
+  } catch(e){
+    setSyncStatus('error');
+    alert('儲存失敗，請確認網路連線後再試');
+  }
+  render();
+}
+
+async function resetMonth(){
+  if(!confirm(`確定要重置 ${state.year} 年 ${state.month+1} 月的所有填假資料嗎？`)) return;
+  setSyncStatus('syncing');
+  try {
+    await sb.from('bookings').delete().eq('year',state.year).eq('month',state.month);
+    const prefix=`${state.year}-${state.month}-`;
+    Object.keys(state.bookings).forEach(k=>{if(k.startsWith(prefix))delete state.bookings[k];});
+    state.history=state.history.filter(h=>!(h.y===state.year&&h.m===state.month));
+    state.turnIndex=0;
+    state.selectedDay=null;
+    await saveAllSettings();
+    setSyncStatus('ok');
+  } catch(e){ setSyncStatus('error'); }
+  render();
+}
+
+function exportExcel(){
+  const y=state.year, m=state.month;
+  const dim=getDIM(y,m);
+  const wb=XLSX.utils.book_new();
+  const c1=[['日期','星期','已填人員','已填格數','上限格數']];
+  for(let d=1;d<=dim;d++){
+    const dow=new Date(y,m,d).getDay();
+    const bks=getBookings(y,m,d);
+    c1.push([`${y}/${m+1}/${d}`,DAYS_TW[dow],bks.map(pi=>state.people[pi]).join('、'),bks.length,getDM(y,m,d)]);
+  }
+  const ws1=XLSX.utils.aoa_to_sheet(c1);
+  ws1['!cols']=[{wch:12},{wch:6},{wch:30},{wch:8},{wch:8}];
+  XLSX.utils.book_append_sheet(wb,ws1,`${m+1}月月曆`);
+  const mh=state.history.filter(h=>h.y===y&&h.m===m);
+  const c2=[['填假順序','姓名','日期','星期']];
+  for(const h of mh) c2.push([h.turn,state.people[h.pi],`${h.y}/${h.m+1}/${h.d}`,DAYS_TW[new Date(h.y,h.m,h.d).getDay()]]);
+  const ws2=XLSX.utils.aoa_to_sheet(c2);
+  ws2['!cols']=[{wch:8},{wch:10},{wch:12},{wch:6}];
+  XLSX.utils.book_append_sheet(wb,ws2,'填假歷程');
+  const c3=[['順序','姓名','本月填假天數']];
+  state.people.forEach((p,i)=>c3.push([i+1,p,mh.filter(h=>h.pi===i).length]));
+  const ws3=XLSX.utils.aoa_to_sheet(c3);
+  ws3['!cols']=[{wch:6},{wch:10},{wch:12}];
+  XLSX.utils.book_append_sheet(wb,ws3,'人員統計');
+  XLSX.writeFile(wb,`填假紀錄_${y}年${m+1}月.xlsx`);
+}
+
+function render(){
+  document.getElementById('app').innerHTML = state.loading ? '<div class="loading"><i class="ti ti-loader" style="font-size:24px;"></i><br>載入中…</div>' : buildHTML();
+  if(!state.loading) bindEvents();
+}
+
+function buildHTML(){
+  return `<div class="tabs">
+    <button class="tab ${state.tab==='admin'?'active':''}" data-tab="admin">管理設定</button>
+    <button class="tab ${state.tab==='fill'?'active':''}" data-tab="fill">填假</button>
+    <button class="tab ${state.tab==='view'?'active':''}" data-tab="view">總覽</button>
+  </div>${state.tab==='admin'?buildAdmin():state.tab==='fill'?buildFill():buildView()}`;
+}
+
+function buildAdmin(){
+  const y=state.year,m=state.month;
+  const dim=getDIM(y,m),fd=getFD(y,m);
+  let qc='';
+  for(let i=0;i<fd;i++) qc+=`<div class="quota-cell empty"></div>`;
+  for(let d=1;d<=dim;d++){
+    const v=getDM(y,m,d);
+    qc+=`<div class="quota-cell"><div class="ql">${d}</div><div class="qbtns"><button class="qbtn" data-qd="${d}" data-delta="-1">−</button><span class="qval">${v}</span><button class="qbtn" data-qd="${d}" data-delta="1">＋</button></div></div>`;
+  }
+  return `
+  <div class="section">
+    <div class="label">填假月份</div>
+    <div class="card month-nav">
+      <button class="btn-icon" id="prev-month"><i class="ti ti-chevron-left"></i></button>
+      <span>${y} 年 ${MONTHS_TW[m]}</span>
+      <button class="btn-icon" id="next-month"><i class="ti ti-chevron-right"></i></button>
+    </div>
+  </div>
+  <div class="section">
+    <div class="label">每日可填格數</div>
+    <div class="batch-row">
+      <span>批次設定所有天為</span>
+      <input type="number" id="batch-val" min="0" max="99" value="1" style="width:64px;">
+      <span>格</span>
+      <button class="btn" id="batch-apply">套用</button>
+    </div>
+    <div class="card" style="padding:12px;">
+      <div class="quota-grid">${DAYS_TW.map(d=>`<div class="qh">${d}</div>`).join('')}${qc}</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="label">填假人員順序</div>
+    ${state.people.map((p,i)=>`<div class="card person-row">
+      <div class="rank">${i+1}</div>
+      <span class="pname">${p}</span>
+      <button class="btn-icon" data-up="${i}"><i class="ti ti-arrow-up"></i></button>
+      <button class="btn-icon" data-down="${i}"><i class="ti ti-arrow-down"></i></button>
+      <button class="btn-icon" data-del="${i}" style="color:#fca5a5;"><i class="ti ti-trash"></i></button>
+    </div>`).join('')}
+    <div class="add-row">
+      <input type="text" id="new-person" placeholder="新增人員姓名">
+      <button class="btn" id="add-person">新增</button>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;">
+    <button class="btn btn-danger" id="reset-btn">重置本月資料</button>
+    <span style="font-size:12px;color:#aaa;"><i class="ti ti-cloud" style="vertical-align:-2px;"></i> 設定自動同步至雲端</span>
+  </div>`;
+}
+
+function buildFill(){
+  const y=state.year,m=state.month;
+  const dim=getDIM(y,m),fd=getFD(y,m);
+  const pi=currentFillerIdx(), name=currentFiller();
+  const turnRound=Math.floor(state.turnIndex/state.people.length)+1;
+  const turnPos=(state.turnIndex%state.people.length)+1;
+  let cells='';
+  for(let i=0;i<fd;i++) cells+=`<div class="day empty"></div>`;
+  for(let d=1;d<=dim;d++){
+    const mx=getDM(y,m,d), booked=countBooked(y,m,d);
+    const bks=getBookings(y,m,d);
+    const isFull=booked>=mx&&mx>0, isSel=state.selectedDay===d;
+    let cls='day';
+    let click=false;
+    if(mx===0) cls+=' zero';
+    else if(isSel){cls+=' sel';click=true;}
+    else if(isFull) cls+=' full';
+    else {cls+=' avail';click=true;}
+    const chips=bks.map(pi2=>{const n=state.people[pi2]||'';return `<div class="nchip">${n.length<=3?n:n.slice(0,2)+'…'}</div>`;}).join('');
+    cells+=`<div class="${cls}" ${click?`data-day="${d}"`:''}>
+      <div class="dnum">${d}</div>
+      ${mx>0?`<div class="dslot">${booked}/${mx}</div>`:`<div class="dslot">休</div>`}
+      ${chips?`<div class="dnames">${chips}</div>`:''}
+    </div>`;
+  }
+  return `
+  <div class="info-box info-highlight">
+    <i class="ti ti-user-check" style="vertical-align:-2px;margin-right:6px;"></i>
+    現在輪到：${name}（第 ${turnRound} 輪 · ${turnPos}/${state.people.length} 位）
+  </div>
+  <div class="section">
+    <div class="label">${y} 年 ${MONTHS_TW[m]} — 每人每次選一格</div>
+    <div class="cal-grid">${DAYS_TW.map(d=>`<div class="dh">${d}</div>`).join('')}${cells}</div>
+    <div class="legend">
+      <span><div class="dot-sq" style="background:#dbeafe;border:1px solid #93c5fd;"></div>已選取</span>
+      <span><div class="dot-sq" style="background:#dbeafe;border:1px solid #93c5fd;"></div>已填（顯示姓名）</span>
+      <span><div class="dot-sq" style="background:#f0fdf4;border:1px solid #bbf7d0;"></div>額滿</span>
+    </div>
+  </div>
+  <div class="confirm-area">
+    <div class="label">已選擇</div>
+    <div class="selected-display ${state.selectedDay===null?'empty':''}">
+      ${state.selectedDay!==null?`${m+1}/${state.selectedDay}（${DAYS_TW[new Date(y,m,state.selectedDay).getDay()]}）`:'尚未選擇，請點選日曆'}
+    </div>
+    <button class="btn btn-primary" id="confirm-fill" style="width:100%;padding:12px;" ${state.selectedDay===null?'disabled':''}>
+      確認填假 — ${name}
+    </button>
+  </div>`;
+}
+
+function buildView(){
+  const y=state.year,m=state.month;
+  const dim=getDIM(y,m);
+  const totalSlots=Array.from({length:dim},(_,i)=>getDM(y,m,i+1)).reduce((a,b)=>a+b,0);
+  const usedSlots=Array.from({length:dim},(_,i)=>countBooked(y,m,i+1)).reduce((a,b)=>a+b,0);
+  const mh=state.history.filter(h=>h.y===y&&h.m===m);
+  const ci=currentFillerIdx();
+  return `
+  <div class="top-actions">
+    <button class="btn" id="refresh-btn"><i class="ti ti-refresh" style="vertical-align:-2px;margin-right:4px;"></i>重新整理</button>
+    <button class="btn btn-excel" id="export-excel"><i class="ti ti-file-spreadsheet" style="vertical-align:-2px;margin-right:4px;"></i>匯出 Excel</button>
+  </div>
+  <div class="grid2">
+    <div class="metric"><div class="metric-label">總可填格數</div><div class="metric-val">${totalSlots}</div></div>
+    <div class="metric"><div class="metric-label">已填格數</div><div class="metric-val">${usedSlots}</div></div>
+  </div>
+  <div class="section">
+    <div class="label">人員填假天數</div>
+    ${state.people.map((p,i)=>{
+      const days=mh.filter(h=>h.pi===i).length;
+      let sl,sc;
+      if(i===ci){sl='目前輪到';sc='ps-now';}
+      else if(days>0){sl=`已填 ${days} 天`;sc='ps-done';}
+      else{sl='等待中';sc='ps-wait';}
+      return `<div class="card person-row"><div class="rank">${i+1}</div><span class="pname">${p}</span><span class="ps ${sc}">${sl}</span></div>`;
+    }).join('')}
+  </div>
+  <div class="section">
+    <div class="label">填假歷程</div>
+    ${mh.length===0?'<div class="info-box">尚無紀錄</div>':
+      `<div class="card" style="padding:10px 16px;">
+        ${mh.map(h=>`<div class="history-row">
+          <span class="tnum">#${h.turn}</span>
+          <span style="font-weight:500;min-width:64px;">${state.people[h.pi]}</span>
+          <span style="color:#888;font-size:14px;">${h.m+1}/${h.d}（${DAYS_TW[new Date(h.y,h.m,h.d).getDay()]}）</span>
+        </div>`).join('')}
+      </div>`}
+  </div>`;
+}
+
+function bindEvents(){
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{state.tab=t.dataset.tab;state.selectedDay=null;render();}));
+  const pm=document.getElementById('prev-month');
+  if(pm) pm.addEventListener('click',async()=>{
+    if(state.month===0){state.month=11;state.year--;}else state.month--;
+    state.selectedDay=null;await saveAllSettings();render();
+  });
+  const nm=document.getElementById('next-month');
+  if(nm) nm.addEventListener('click',async()=>{
+    if(state.month===11){state.month=0;state.year++;}else state.month++;
+    state.selectedDay=null;await saveAllSettings();render();
+  });
+  document.querySelectorAll('[data-qd]').forEach(b=>b.addEventListener('click',async()=>{
+    setDM(state.year,state.month,parseInt(b.dataset.qd),getDM(state.year,state.month,parseInt(b.dataset.qd))+parseInt(b.dataset.delta));
+    render();await saveSetting('dailyMax',state.dailyMax);setSyncStatus('ok');
+  }));
+  const ba=document.getElementById('batch-apply');
+  if(ba) ba.addEventListener('click',async()=>{
+    const v=parseInt(document.getElementById('batch-val').value)||0;
+    const dim=getDIM(state.year,state.month);
+    for(let d=1;d<=dim;d++) setDM(state.year,state.month,d,v);
+    render();await saveSetting('dailyMax',state.dailyMax);setSyncStatus('ok');
+  });
+  document.querySelectorAll('[data-up]').forEach(b=>b.addEventListener('click',async()=>{
+    const i=parseInt(b.dataset.up);
+    if(i>0){[state.people[i-1],state.people[i]]=[state.people[i],state.people[i-1]];render();await saveSetting('people',state.people);setSyncStatus('ok');}
+  }));
+  document.querySelectorAll('[data-down]').forEach(b=>b.addEventListener('click',async()=>{
+    const i=parseInt(b.dataset.down);
+    if(i<state.people.length-1){[state.people[i+1],state.people[i]]=[state.people[i],state.people[i+1]];render();await saveSetting('people',state.people);setSyncStatus('ok');}
+  }));
+  document.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{
+    state.people.splice(parseInt(b.dataset.del),1);render();await saveSetting('people',state.people);setSyncStatus('ok');
+  }));
+  const ab=document.getElementById('add-person');
+  if(ab) ab.addEventListener('click',async()=>{
+    const inp=document.getElementById('new-person');
+    if(inp&&inp.value.trim()){state.people.push(inp.value.trim());inp.value='';render();await saveSetting('people',state.people);setSyncStatus('ok');}
+  });
+  document.querySelectorAll('[data-day]').forEach(c=>c.addEventListener('click',()=>{
+    const d=parseInt(c.dataset.day);state.selectedDay=state.selectedDay===d?null:d;render();
+  }));
+  const cf=document.getElementById('confirm-fill');
+  if(cf) cf.addEventListener('click',confirmFill);
+  const rb=document.getElementById('reset-btn');
+  if(rb) rb.addEventListener('click',resetMonth);
+  const ee=document.getElementById('export-excel');
+  if(ee) ee.addEventListener('click',exportExcel);
+  const rfr=document.getElementById('refresh-btn');
+  if(rfr) rfr.addEventListener('click',()=>{state.loading=true;render();loadFromDB();});
+}
+
+loadFromDB();
+</script>
+</body>
+</html>
