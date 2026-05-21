@@ -290,6 +290,9 @@ function lastFill(sh,lt){const mh=D(sh,lt).history.filter(h=>h.y===state.year&&h
 
 // Anti-duplicate: same person can't have leave+stay on same day
 function hasConflict(sh,lt,pi,day){
+  // 同一假別同一天不能重複填
+  if(getBks(sh,lt,day).some(b=>b.pi===pi)) return true;
+  // 休假與外宿不能同天
   const other=lt==='leave'?'stay':'leave';
   return getBks(sh,other,day).some(b=>b.pi===pi);
 }
