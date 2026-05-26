@@ -10,27 +10,26 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh;}
 .container{max-width:720px;margin:0 auto;padding:16px 16px 60px;}
-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
 h1{font-size:20px;font-weight:600;}
 .sync-info{font-size:12px;color:#888;display:flex;align-items:center;gap:6px;}
 .dot{width:8px;height:8px;border-radius:50%;background:#4ade80;}
 .dot.syncing{background:#fbbf24;animation:blink 1s infinite;}
 .dot.error{background:#f87171;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
-.shift-bar{display:flex;gap:6px;margin-bottom:12px;}
+.shift-bar{display:flex;gap:6px;margin-bottom:10px;}
 .shift-btn{flex:1;padding:10px;font-size:14px;font-weight:600;border:2px solid #e0e0e0;border-radius:12px;background:#fff;cursor:pointer;color:#888;}
-.shift-btn.active{border-color:#1a1a1a;color:#1a1a1a;background:#fff;}
 .shift-btn.A.active{border-color:#2563eb;color:#2563eb;}
 .shift-btn.B.active{border-color:#7c3aed;color:#7c3aed;}
-.tabs{display:flex;gap:4px;background:#e8e8e2;border-radius:12px;padding:4px;margin-bottom:18px;}
+.tabs{display:flex;gap:4px;background:#e8e8e2;border-radius:12px;padding:4px;margin-bottom:16px;}
 .tab{flex:1;padding:8px;font-size:14px;cursor:pointer;border:none;background:none;color:#666;border-radius:8px;font-weight:500;}
 .tab.active{background:#fff;color:#1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,.1);}
-.lt-bar{display:flex;gap:6px;margin-bottom:16px;}
+.lt-bar{display:flex;gap:6px;margin-bottom:14px;}
 .lt-btn{flex:1;padding:8px;font-size:13px;font-weight:500;border:1px solid #e0e0e0;border-radius:10px;background:#fff;cursor:pointer;color:#888;}
 .lt-btn.active{border-color:#1a1a1a;color:#1a1a1a;background:#f5f5f0;}
 .card{background:#fff;border-radius:14px;padding:14px 18px;margin-bottom:10px;border:1px solid #ebebeb;}
-.section{margin-bottom:20px;}
-.slabel{font-size:13px;color:#888;margin-bottom:8px;font-weight:500;display:flex;align-items:center;gap:6px;}
+.section{margin-bottom:18px;}
+.slabel{font-size:13px;color:#888;margin-bottom:8px;font-weight:500;display:flex;align-items:center;gap:5px;}
 .person-row{display:flex;align-items:center;gap:10px;}
 .rank{width:26px;height:26px;border-radius:50%;background:#f0f0ea;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#666;flex-shrink:0;}
 .pname{flex:1;font-size:14px;font-weight:500;}
@@ -51,18 +50,21 @@ h1{font-size:20px;font-weight:600;}
 .btn-skip:hover{background:#fef2f2;}
 .btn-undo{background:#fff;color:#ea580c;border:1px solid #fdba74;width:100%;padding:9px;font-size:13px;margin-top:7px;border-radius:10px;cursor:pointer;font-weight:500;}
 .btn-undo:hover{background:#fff7ed;}
+.btn-rollback{background:#fff;color:#7c3aed;border:1px solid #c4b5fd;padding:8px 14px;font-size:13px;border-radius:10px;cursor:pointer;font-weight:500;}
+.btn-rollback:hover{background:#f5f3ff;}
 .btn-danger{border-color:#fca5a5;color:#dc2626;font-size:13px;}
 .btn-danger:hover{background:#fef2f2;}
 .btn-excel{border-color:#6ee7b7;color:#059669;font-size:13px;}
 .btn-excel:hover{background:#f0fdf4;}
 .add-row{display:flex;gap:8px;margin-top:8px;}
 .add-row input{flex:1;}
-input[type=text],input[type=number],select{padding:8px 12px;border:1px solid #e0e0e0;border-radius:10px;font-size:14px;font-family:inherit;background:#fff;}
+input[type=text],input[type=number],select{padding:7px 11px;border:1px solid #e0e0e0;border-radius:9px;font-size:14px;font-family:inherit;background:#fff;}
 input:focus,select:focus{outline:none;border-color:#999;}
 .info-box{background:#f5f5f0;border-radius:10px;padding:11px 14px;font-size:13px;color:#666;margin-bottom:10px;}
 .info-hl{border-left:3px solid #16a34a;color:#15803d;background:#f0fdf4;font-weight:500;}
 .info-warn{border-left:3px solid #f59e0b;color:#b45309;background:#fffbeb;}
 .info-err{border-left:3px solid #ef4444;color:#dc2626;background:#fef2f2;font-weight:500;}
+.info-purple{border-left:3px solid #7c3aed;color:#6d28d9;background:#f5f3ff;font-weight:500;}
 .month-nav{display:flex;align-items:center;gap:12px;}
 .month-nav span{flex:1;text-align:center;font-weight:600;font-size:15px;}
 .batch-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
@@ -80,18 +82,13 @@ input:focus,select:focus{outline:none;border-color:#999;}
 .rstat{background:#f5f5f0;border-radius:9px;padding:9px 10px;text-align:center;}
 .rstat-label{font-size:10px;color:#aaa;margin-bottom:3px;}
 .rstat-val{font-size:19px;font-weight:700;}
-/* Drag sort */
-.drag-list{display:flex;flex-direction:column;gap:5px;}
-.drag-item{display:flex;align-items:center;gap:9px;padding:9px 12px;background:#f5f5f0;border-radius:10px;border:1px solid transparent;transition:background .15s;}
-.drag-item.dragging{opacity:.4;}
-.drag-item.drag-over{border-top:2px solid #3b82f6;}
-.drag-handle{cursor:grab;color:#ccc;font-size:16px;user-select:none;padding:2px;}
-.drag-handle:hover{color:#888;}
-.drag-handle:active{cursor:grabbing;}
-.dl-name{flex:1;font-size:14px;font-weight:500;}
-.sub-badge{font-size:11px;padding:2px 8px;border-radius:20px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;}
-.lr-section{margin-top:10px;}
-.lr-sec-title{font-size:12px;color:#aaa;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+/* Rank list */
+.rank-list{display:flex;flex-direction:column;gap:5px;margin-bottom:8px;}
+.rank-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#f5f5f0;border-radius:9px;}
+.rank-item-name{flex:1;font-size:14px;font-weight:500;}
+.rank-item-label{font-size:12px;color:#aaa;min-width:28px;}
+.rank-num-input{width:54px;text-align:center;padding:5px 8px;font-size:14px;}
+/* Last round */
 .lr-check-row{display:flex;align-items:center;gap:9px;padding:9px 12px;background:#f5f5f0;border-radius:10px;cursor:pointer;border:1px solid transparent;margin-bottom:5px;}
 .lr-check-row input[type=checkbox]{width:17px;height:17px;cursor:pointer;accent-color:#1a1a1a;}
 .lr-check-row.checked{background:#f0fdf4;border-color:#bbf7d0;}
@@ -143,7 +140,11 @@ input:focus,select:focus{outline:none;border-color:#999;}
 .top-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
 .divider{height:1px;background:#f0f0ea;margin:14px 0;}
 .loading{text-align:center;padding:60px 20px;color:#aaa;font-size:15px;}
-.lt-section-title{font-size:13px;font-weight:600;padding:6px 0;border-bottom:1px solid #f0f0ea;margin-bottom:10px;color:#555;}
+.lt-section-title{font-size:13px;font-weight:700;padding:6px 0;border-bottom:1px solid #f0f0ea;margin-bottom:12px;color:#444;display:flex;align-items:center;gap:6px;}
+.admin-tool-box{background:#f5f3ff;border:1px solid #c4b5fd;border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+.admin-tool-title{font-size:13px;font-weight:700;color:#6d28d9;margin-bottom:10px;display:flex;align-items:center;gap:5px;}
+.admin-tool-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+.admin-tool-row span{font-size:13px;color:#555;}
 </style>
 </head>
 <body>
@@ -164,16 +165,18 @@ const MONTHS=['一月','二月','三月','四月','五月','六月','七月','�
 const now=new Date();
 
 // ── State ──
-function defD(){return{dailyMax:{},bookings:{},turnIndex:0,lastRoundSelected:[],lastRoundStandby:[],lastRoundSubs:0,roundExtras:{},skips:[],history:[]};}
-function defSh(){return{people:[],leave:defD(),stay:defD()};}
-
+// fillOrder, lastRoundOrder, standbyOrder, roundExtras all store NAMES (not indices)
+// history.pi and bookings[k][].pi = index into fillOrder (stable as long as fillOrder doesn't change)
+function defLT(){
+  return {fillOrder:[],lastRoundOrder:[],standbyOrder:[],dailyMax:{},bookings:{},turnIndex:0,history:[],roundExtras:{},skips:[],lastRoundSubs:0};
+}
+function defSh(){return {people:[],leave:defLT(),stay:defLT()};}
 let state={tab:'admin',shift:'A',leaveType:'leave',year:now.getFullYear(),month:now.getMonth(),selectedDay:null,loading:true,A:defSh(),B:defSh()};
 
 function ss(){return state[state.shift];}
-function sd(){return state[state.shift][state.leaveType];}
 function D(sh,lt){return state[sh][lt];}
 
-// ── Sync UI ──
+// ── Sync ──
 function setSS(s){
   const d=document.getElementById('sync-dot'),l=document.getElementById('sync-label');
   if(!d)return;
@@ -194,20 +197,28 @@ async function loadDB(){
           if(r.key===sh+'_people')state[sh].people=r.value||[];
           for(const lt of['leave','stay']){
             const p=sh+'_'+lt+'_';
+            if(r.key===p+'fillOrder')D(sh,lt).fillOrder=r.value||[];
+            if(r.key===p+'lastRoundOrder')D(sh,lt).lastRoundOrder=r.value||[];
+            if(r.key===p+'standbyOrder')D(sh,lt).standbyOrder=r.value||[];
             if(r.key===p+'dailyMax')D(sh,lt).dailyMax=r.value||{};
             if(r.key===p+'turnIndex')D(sh,lt).turnIndex=r.value||0;
-            if(r.key===p+'lastRoundSelected')D(sh,lt).lastRoundSelected=r.value||[];
-            if(r.key===p+'lastRoundStandby')D(sh,lt).lastRoundStandby=r.value||[];
-            if(r.key===p+'lastRoundSubs')D(sh,lt).lastRoundSubs=r.value||0;
             if(r.key===p+'roundExtras')D(sh,lt).roundExtras=r.value||{};
             if(r.key===p+'skips')D(sh,lt).skips=r.value||[];
+            if(r.key===p+'lastRoundSubs')D(sh,lt).lastRoundSubs=r.value||0;
           }
         }
       }
     }
+    // Defaults
     for(const sh of['A','B']){
       if(!state[sh].people.length)state[sh].people=sh==='A'?['張小明','李美玲','王大偉']:['陳雅琪','林志豪'];
+      for(const lt of['leave','stay']){
+        const d=D(sh,lt);
+        if(!d.fillOrder.length)d.fillOrder=[...state[sh].people];
+        if(!d.standbyOrder.length)d.standbyOrder=state[sh].people.filter(n=>!d.lastRoundOrder.includes(n));
+      }
     }
+    // Load bookings (person_index = index into fillOrder)
     const{data:bks}=await sb.from('bookings').select('*');
     if(bks){
       for(const b of bks){
@@ -218,11 +229,6 @@ async function loadDB(){
         D(sh,lt).history.push({turn:b.turn_number,pi:b.person_index,y:b.year,m:b.month,d:b.day,type:b.entry_type||'regular',id:b.id});
       }
       for(const sh of['A','B'])for(const lt of['leave','stay'])D(sh,lt).history.sort((a,b2)=>a.turn-b2.turn);
-    }
-    // Init standby if empty
-    for(const sh of['A','B'])for(const lt of['leave','stay']){
-      const d=D(sh,lt),N=state[sh].people.length;
-      if(!d.lastRoundStandby.length)d.lastRoundStandby=Array.from({length:N},(_,i)=>i).filter(i=>!d.lastRoundSelected.includes(i));
     }
     state.loading=false;setSS('ok');
   }catch(e){setSS('error');state.loading=false;}
@@ -235,7 +241,12 @@ async function saveShift(sh){
   const saves=[saveSetting(sh+'_people',state[sh].people),saveSetting('year',state.year),saveSetting('month',state.month)];
   for(const lt of['leave','stay']){
     const p=sh+'_'+lt+'_',d=D(sh,lt);
-    saves.push(saveSetting(p+'dailyMax',d.dailyMax),saveSetting(p+'turnIndex',d.turnIndex),saveSetting(p+'lastRoundSelected',d.lastRoundSelected),saveSetting(p+'lastRoundStandby',d.lastRoundStandby),saveSetting(p+'lastRoundSubs',d.lastRoundSubs),saveSetting(p+'roundExtras',d.roundExtras),saveSetting(p+'skips',d.skips));
+    saves.push(
+      saveSetting(p+'fillOrder',d.fillOrder),saveSetting(p+'lastRoundOrder',d.lastRoundOrder),
+      saveSetting(p+'standbyOrder',d.standbyOrder),saveSetting(p+'dailyMax',d.dailyMax),
+      saveSetting(p+'turnIndex',d.turnIndex),saveSetting(p+'roundExtras',d.roundExtras),
+      saveSetting(p+'skips',d.skips),saveSetting(p+'lastRoundSubs',d.lastRoundSubs)
+    );
   }
   await Promise.all(saves);setSS('ok');
 }
@@ -248,77 +259,86 @@ function getDM(sh,lt,d){const k=bk(state.year,state.month,d),v=D(sh,lt).dailyMax
 function setDM(sh,lt,d,v){D(sh,lt).dailyMax[bk(state.year,state.month,d)]=Math.max(0,v);}
 function getBks(sh,lt,d){return D(sh,lt).bookings[bk(state.year,state.month,d)]||[];}
 function countBks(sh,lt,d){return getBks(sh,lt,d).length;}
-
+function nameAt(sh,lt,pi){return D(sh,lt).fillOrder[pi]||'';}
 function getTotalSlots(sh,lt){const dim=getDIM(state.year,state.month);let t=0;for(let d=1;d<=dim;d++)t+=getDM(sh,lt,d);return t;}
 
 function getRoundInfo(sh,lt){
-  const N=state[sh].people.length;if(!N)return{full:0,rem:0,total:0,N:0,extraCount:0,reg:0};
+  const N=D(sh,lt).fillOrder.length;if(!N)return{full:0,rem:0,total:0,N:0,extraCount:0,reg:0};
   const total=getTotalSlots(sh,lt);
   let extraCount=0;
-  Object.values(D(sh,lt).roundExtras).forEach(arr=>{extraCount+=(arr||[]).filter(i=>i<N).length;});
+  Object.values(D(sh,lt).roundExtras).forEach(arr=>{extraCount+=(arr||[]).length;});
   const reg=Math.max(0,total-extraCount);
   return{full:Math.floor(reg/N),rem:reg%N,total,N,extraCount,reg};
 }
 
-function getFillers(sh,lt){const d=D(sh,lt),{N}=getRoundInfo(sh,lt);return d.lastRoundSelected.filter(i=>i<N);}
-function getStandby(sh,lt){const d=D(sh,lt),{N}=getRoundInfo(sh,lt),sel=d.lastRoundSelected;return d.lastRoundStandby.filter(i=>i<N&&!sel.includes(i));}
-
 function computeSeq(sh,lt){
-  const{full,rem,N}=getRoundInfo(sh,lt);if(!N)return[];
-  const d=D(sh,lt),fillers=getFillers(sh,lt),seq=[];
+  const d=D(sh,lt),fo=d.fillOrder,N=fo.length;if(!N)return[];
+  const{full,rem}=getRoundInfo(sh,lt);
+  const seq=[];
   for(let r=1;r<=full;r++){
-    const ex=(d.roundExtras[r]||[]).filter(i=>i<N);
-    for(const pi of ex)seq.push({pi,round:r,type:'extra'});
+    const exNames=d.roundExtras[r]||[];
+    for(const name of exNames){const pi=fo.indexOf(name);if(pi>=0)seq.push({pi,round:r,type:'extra'});}
     for(let i=0;i<N;i++)seq.push({pi:i,round:r,type:'regular'});
   }
   if(rem>0){
-    const r=full+1,ex=(d.roundExtras[r]||[]).filter(i=>i<N);
-    for(const pi of ex)seq.push({pi,round:r,type:'extra'});
-    const eff=fillers.slice(0,rem+d.lastRoundSubs);
-    for(const pi of eff)seq.push({pi,round:r,type:'regular'});
+    const r=full+1,exNames=d.roundExtras[r]||[];
+    for(const name of exNames){const pi=fo.indexOf(name);if(pi>=0)seq.push({pi,round:r,type:'extra'});}
+    // Last round: lastRoundOrder + substitutes from standbyOrder
+    const lrNames=[...d.lastRoundOrder,...d.standbyOrder.slice(0,d.lastRoundSubs)];
+    for(const name of lrNames){const pi=fo.indexOf(name);if(pi>=0)seq.push({pi,round:r,type:'regular'});}
   }
   return seq;
 }
 
-function getCurEntry(sh,lt){const seq=computeSeq(sh,lt),ti=D(sh,lt).turnIndex;return ti<seq.length?seq[ti]:null;}
-function canUndo(sh,lt){
-  const d=D(sh,lt),mh=d.history.filter(h=>h.y===state.year&&h.m===state.month);
-  if(!mh.length)return false;
-  return d.turnIndex===mh[mh.length-1].turn;
+function capTurnIndex(sh,lt){
+  const seqLen=computeSeq(sh,lt).length;
+  if(D(sh,lt).turnIndex>seqLen)D(sh,lt).turnIndex=seqLen;
 }
-function lastFill(sh,lt){const mh=D(sh,lt).history.filter(h=>h.y===state.year&&h.m===state.month);return mh.length?mh[mh.length-1]:null;}
 
-// Anti-duplicate: same person can't have leave+stay on same day
+function getCurEntry(sh,lt){const seq=computeSeq(sh,lt),ti=D(sh,lt).turnIndex;return ti<seq.length?seq[ti]:null;}
+function curName(sh,lt){const e=getCurEntry(sh,lt);return e?nameAt(sh,lt,e.pi):'';}
+function isAllDone(sh,lt){return getCurEntry(sh,lt)===null;}
+function lastFill(sh,lt){const mh=D(sh,lt).history.filter(h=>h.y===state.year&&h.m===state.month);return mh.length?mh[mh.length-1]:null;}
+function canUndo(sh,lt){const lf=lastFill(sh,lt);return lf&&lf.turn===D(sh,lt).turnIndex;}
+
+// Conflict: same name booked in same lt same day, or same name booked in other lt same day
 function hasConflict(sh,lt,pi,day){
-  // 同一假別同一天不能重複填
-  if(getBks(sh,lt,day).some(b=>b.pi===pi)) return true;
-  // 休假與外宿不能同天
+  const name=nameAt(sh,lt,pi);if(!name)return false;
+  if(getBks(sh,lt,day).some(b=>nameAt(sh,lt,b.pi)===name))return true;
   const other=lt==='leave'?'stay':'leave';
-  return getBks(sh,other,day).some(b=>b.pi===pi);
+  return getBks(sh,other,day).some(b=>nameAt(sh,other,b.pi)===name);
 }
 
 // ── Actions ──
 async function confirmFill(){
-  const day=state.selectedDay;if(day===null)return;
-  const sh=state.shift,lt=state.leaveType;
-  const entry=getCurEntry(sh,lt);if(!entry)return;
-  const{pi,type}=entry;
-  if(hasConflict(sh,lt,pi,day)){
-    const oName=lt==='leave'?'外宿':'休假';
-    alert(state[sh].people[pi]+' 在 '+(state.month+1)+'/'+day+' 已有'+oName+'紀錄，無法重複填假！');return;
-  }
-  setSS('syncing');
   try{
+    const day=state.selectedDay;
+    if(day===null){alert('請先點選日期');return;}
+    const sh=state.shift,lt=state.leaveType;
+    const entry=getCurEntry(sh,lt);
+    if(!entry){alert('目前無法判斷填假順位，請確認填假順位是否已設定。');return;}
+    const{pi,type}=entry;
+    const name=nameAt(sh,lt,pi);
+    if(!name){alert('找不到對應人員，請確認填假順位設定。');return;}
+    if(hasConflict(sh,lt,pi,day)){
+      const oN=lt==='leave'?'外宿':'休假';
+      alert(name+' 在 '+(state.month+1)+'/'+day+' 已有填假紀錄（'+oN+'或同假別），無法重複！');return;
+    }
+    setSS('syncing');
     const{data,error}=await sb.from('bookings').insert({year:state.year,month:state.month,day,person_index:pi,turn_number:D(sh,lt).turnIndex+1,entry_type:type,shift:sh,leave_type:lt}).select();
-    if(error)throw error;
+    if(error){console.error('Supabase error:',JSON.stringify(error));alert('儲存失敗：'+JSON.stringify(error));setSS('error');return;}
     const k=bk(state.year,state.month,day);
     if(!D(sh,lt).bookings[k])D(sh,lt).bookings[k]=[];
     D(sh,lt).bookings[k].push({pi,type});
     D(sh,lt).history.push({turn:D(sh,lt).turnIndex+1,pi,y:state.year,m:state.month,d:day,type,id:data[0].id});
     D(sh,lt).turnIndex++;state.selectedDay=null;
     await saveShift(sh);
-  }catch(e){setSS('error');alert('儲存失敗，請重試');}
-  render();
+    render();
+  }catch(e){
+    console.error('confirmFill exception:',e);
+    setSS('error');
+    alert('發生錯誤：'+e.message);
+  }
 }
 
 async function confirmSkip(){
@@ -326,21 +346,17 @@ async function confirmSkip(){
   const entry=getCurEntry(sh,lt);if(!entry)return;
   const{full,rem}=getRoundInfo(sh,lt);
   const totalR=full+(rem>0?1:0);
-  const isLast=(entry.round===totalR&&rem>0&&entry.type==='regular');
+  const isLast=entry.round===totalR&&rem>0&&entry.type==='regular';
   let subMsg='',nextSub=null;
   if(isLast){
-    const sb2=getStandby(sh,lt);
-    if(sb2.length>0){nextSub=sb2[0];subMsg='\n\n⇒ 將由【'+state[sh].people[nextSub]+'】自動遞補';}
+    const avail=D(sh,lt).standbyOrder.filter(n=>!D(sh,lt).lastRoundOrder.includes(n)).slice(D(sh,lt).lastRoundSubs);
+    if(avail.length>0){nextSub=avail[0];subMsg='\n\n⇒ 將由【'+nextSub+'】自動遞補';}
     else subMsg='\n\n⚠ 已無備補人員可遞補';
   }
-  if(!confirm('確定要放棄這次填假嗎？\n順位將跳至下一位，且不佔用格子。'+subMsg))return;
-  const{pi}=entry;
-  D(sh,lt).skips.push({turn:D(sh,lt).turnIndex+1,pi,y:state.year,m:state.month});
+  if(!confirm('確定要放棄這次填假嗎？不佔用格子。'+subMsg))return;
+  D(sh,lt).skips.push({turn:D(sh,lt).turnIndex+1,pi:entry.pi,y:state.year,m:state.month});
   D(sh,lt).turnIndex++;state.selectedDay=null;
-  if(isLast&&nextSub!==null){
-    D(sh,lt).lastRoundSelected.push(nextSub);
-    D(sh,lt).lastRoundSubs=(D(sh,lt).lastRoundSubs||0)+1;
-  }
+  if(isLast&&nextSub){D(sh,lt).lastRoundOrder.push(nextSub);D(sh,lt).lastRoundSubs++;}
   setSS('syncing');await saveShift(sh);render();
 }
 
@@ -348,26 +364,48 @@ async function undoLast(){
   const sh=state.shift,lt=state.leaveType;
   if(!canUndo(sh,lt))return;
   const last=lastFill(sh,lt);
-  if(!confirm('確定要收回【'+state[sh].people[last.pi]+' '+last.m+'/'+(last.d)+'】的填假紀錄嗎？\n下一位尚未填，可以反悔。'))return;
+  if(!confirm('確定要收回 '+nameAt(sh,lt,last.pi)+' '+( last.m+1)+'/'+last.d+' 的填假紀錄？'))return;
   setSS('syncing');
   try{
     await sb.from('bookings').delete().eq('id',last.id);
     const k=bk(last.y,last.m,last.d);
-    if(D(sh,lt).bookings[k]){
-      const idx=D(sh,lt).bookings[k].findIndex(b=>b.pi===last.pi&&b.type===last.type);
-      if(idx>=0)D(sh,lt).bookings[k].splice(idx,1);
-    }
-    const hi=D(sh,lt).history.findIndex(h=>h.id===last.id);
-    if(hi>=0)D(sh,lt).history.splice(hi,1);
+    if(D(sh,lt).bookings[k]){const idx=D(sh,lt).bookings[k].findIndex(b=>b.pi===last.pi&&b.type===last.type);if(idx>=0)D(sh,lt).bookings[k].splice(idx,1);}
+    const hi=D(sh,lt).history.findIndex(h=>h.id===last.id);if(hi>=0)D(sh,lt).history.splice(hi,1);
     D(sh,lt).turnIndex--;state.selectedDay=null;
     await saveShift(sh);
   }catch(e){setSS('error');alert('撤銷失敗');}
   render();
 }
 
+async function adminRollback(sh,lt){
+  const d=D(sh,lt);
+  if(d.turnIndex===0){alert('已無輪次可倒退');return;}
+  const lf=lastFill(sh,lt);
+  const msg=lf&&lf.turn===d.turnIndex
+    ?'強制倒退一步，將移除：\n'+nameAt(sh,lt,lf.pi)+' '+(lf.m+1)+'/'+lf.d
+    :'強制倒退一個輪次計數（對應一次放棄紀錄）';
+  if(!confirm('【管理員操作】\n'+msg+'\n\n確定執行？'))return;
+  setSS('syncing');
+  try{
+    if(lf&&lf.turn===d.turnIndex){
+      await sb.from('bookings').delete().eq('id',lf.id);
+      const k=bk(lf.y,lf.m,lf.d);
+      if(d.bookings[k]){const idx=d.bookings[k].findIndex(b=>b.pi===lf.pi&&b.type===lf.type);if(idx>=0)d.bookings[k].splice(idx,1);}
+      const hi=d.history.findIndex(h=>h.id===lf.id);if(hi>=0)d.history.splice(hi,1);
+    } else {
+      // Remove last skip
+      const ms=d.skips.filter(s=>s.y===state.year&&s.m===state.month);
+      if(ms.length)d.skips.splice(d.skips.lastIndexOf(ms[ms.length-1]),1);
+    }
+    d.turnIndex--;state.selectedDay=null;
+    await saveShift(sh);
+  }catch(e){setSS('error');alert('操作失敗');}
+  render();
+}
+
 async function resetMonth(sh,lt){
   const ltN=lt==='leave'?'休假':'外宿';
-  if(!confirm('確定要重置 '+sh+'班 '+state.year+'年'+(state.month+1)+'月 '+ltN+' 的所有資料嗎？'))return;
+  if(!confirm('確定要重置 '+sh+'班 '+state.year+'/'+(state.month+1)+' '+ltN+' 所有資料？'))return;
   setSS('syncing');
   try{
     await sb.from('bookings').delete().eq('year',state.year).eq('month',state.month).eq('shift',sh).eq('leave_type',lt);
@@ -375,134 +413,151 @@ async function resetMonth(sh,lt){
     Object.keys(D(sh,lt).bookings).forEach(k=>{if(k.startsWith(pre))delete D(sh,lt).bookings[k];});
     D(sh,lt).history=D(sh,lt).history.filter(h=>!(h.y===state.year&&h.m===state.month));
     D(sh,lt).skips=D(sh,lt).skips.filter(s=>!(s.y===state.year&&s.m===state.month));
-    D(sh,lt).turnIndex=0;D(sh,lt).lastRoundSubs=0;
-    state.selectedDay=null;
+    D(sh,lt).turnIndex=0;D(sh,lt).lastRoundSubs=0;state.selectedDay=null;
     await saveShift(sh);
   }catch(e){setSS('error');}
   render();
 }
 
+// ── Rank list ──
+function buildRankList(names, listId, sh, lt, field){
+  if(!names.length)return '<div style="color:#bbb;font-size:13px;padding:6px 0;">（空）</div>';
+  return '<div class="rank-list" id="'+listId+'">'
+    +names.map((name,i)=>'<div class="rank-item"><span class="rank-item-label">'+(i+1)+'.</span><span class="rank-item-name">'+name+'</span><input type="number" class="rank-num-input" min="1" max="'+names.length+'" value="'+(i+1)+'" data-ri="'+i+'"></div>').join('')
+    +'</div>'
+    +'<button class="btn" style="font-size:12px;" data-rlid="'+listId+'" data-rlsh="'+sh+'" data-rllt="'+lt+'" data-rlfield="'+field+'">依順位排序</button>';
+}
+
 // ── Render ──
 function render(){
   document.getElementById('app').innerHTML=state.loading?'<div class="loading">載入中…</div>':buildHTML();
-  if(!state.loading){bindEvents();setupDragLists();}
+  if(!state.loading)bindEvents();
 }
-
 function buildHTML(){
   const sh=state.shift;
-  return '<div class="shift-bar">'
-    +'<button class="shift-btn A'+(sh==='A'?' active':'')+'" data-shift="A">A 班</button>'
-    +'<button class="shift-btn B'+(sh==='B'?' active':'')+'" data-shift="B">B 班</button>'
-    +'</div>'
-    +'<div class="tabs">'
-    +'<button class="tab'+(state.tab==='admin'?' active':'')+'" data-tab="admin">管理設定</button>'
-    +'<button class="tab'+(state.tab==='fill'?' active':'')+'" data-tab="fill">填假</button>'
-    +'<button class="tab'+(state.tab==='view'?' active':'')+'" data-tab="view">總覽</button>'
-    +'</div>'
+  return '<div class="shift-bar"><button class="shift-btn A'+(sh==='A'?' active':'')+'" data-shift="A">A 班</button><button class="shift-btn B'+(sh==='B'?' active':'')+'" data-shift="B">B 班</button></div>'
+    +'<div class="tabs"><button class="tab'+(state.tab==='admin'?' active':'')+'" data-tab="admin">管理設定</button><button class="tab'+(state.tab==='fill'?' active':'')+'" data-tab="fill">填假</button><button class="tab'+(state.tab==='view'?' active':'')+'" data-tab="view">總覽</button></div>'
     +(state.tab==='admin'?buildAdmin():state.tab==='fill'?buildFill():buildView());
 }
 
 // ── Admin ──
-function buildLTSettings(sh,lt){
+function buildLTSection(sh,lt){
   const dim=getDIM(state.year,state.month),fd=getFD(state.year,state.month);
   const{full,rem,total,N,extraCount,reg}=getRoundInfo(sh,lt);
-  const fillers=getFillers(sh,lt),standby=getStandby(sh,lt);
-  const ltN=lt==='leave'?'休假':'外宿',ltColor=lt==='leave'?'#2563eb':'#7c3aed';
+  const d=D(sh,lt);
+  const ltN=lt==='leave'?'休假':'外宿',ltC=lt==='leave'?'#2563eb':'#7c3aed';
 
-  // Quota grid
+  // Quota
   let qc='';
   for(let i=0;i<fd;i++)qc+='<div class="quota-cell empty"></div>';
-  for(let d=1;d<=dim;d++){
-    const v=getDM(sh,lt,d);
-    qc+='<div class="quota-cell"><div class="ql">'+d+'</div><div class="qbtns"><button class="qbtn" data-sh="'+sh+'" data-lt="'+lt+'" data-qd="'+d+'" data-delta="-1">−</button><span class="qval">'+v+'</span><button class="qbtn" data-sh="'+sh+'" data-lt="'+lt+'" data-qd="'+d+'" data-delta="1">＋</button></div></div>';
+  for(let dd=1;dd<=dim;dd++){
+    const v=getDM(sh,lt,dd);
+    qc+='<div class="quota-cell"><div class="ql">'+dd+'</div><div class="qbtns"><button class="qbtn" data-sh="'+sh+'" data-lt="'+lt+'" data-qd="'+dd+'" data-delta="-1">−</button><span class="qval">'+v+'</span><button class="qbtn" data-sh="'+sh+'" data-lt="'+lt+'" data-qd="'+dd+'" data-delta="1">＋</button></div></div>';
   }
+
+  // Fill order rank list
+  const foList=buildRankList(d.fillOrder,'rl-fo-'+sh+'-'+lt,sh,lt,'fillOrder');
+  const hasHistory=d.history.filter(h=>h.y===state.year&&h.m===state.month).length>0;
 
   // Last round
   let lrHTML='';
   if(rem>0){
-    const match=fillers.length===rem;
-    const subsCount=D(sh,lt).lastRoundSubs||0;
-    lrHTML='<div class="section"><div class="slabel">最後一輪參與人員 <span style="font-size:11px;color:#aaa;font-weight:400;">（勾選 '+rem+' 人）</span></div>'
-      +'<div id="lrchecks-'+sh+'-'+lt+'">'
-      +state[sh].people.map((p,i)=>{
-        const checked=D(sh,lt).lastRoundSelected.includes(i);
-        const isSub=checked&&subsCount>0&&!D(sh,lt).lastRoundSelected.slice(0,fillers.length-subsCount).includes(i);
-        return '<label class="lr-check-row'+(checked?' checked':'')+'">'
-          +'<input type="checkbox" data-lrsh="'+sh+'" data-lrlt="'+lt+'" data-lrpi="'+i+'"'+(checked?' checked':'')+'>'
-          +'<span class="lr-check-name">'+p+'</span>'
-          +(isSub?'<span class="sub-badge">⇒ 遞補</span>':checked?'<span class="ps ps-done">✓ 填</span>':'')
-          +'</label>';
+    const match=d.lastRoundOrder.length===rem;
+    const subsN=d.lastRoundSubs||0;
+    lrHTML='<div class="section"><div class="slabel">最後一輪參與人員 <span style="font-size:11px;color:#aaa;font-weight:400;">（需勾選 '+rem+' 人）</span></div>'
+      +d.fillOrder.map(name=>{
+        const checked=d.lastRoundOrder.includes(name);
+        const isSub=checked&&subsN>0&&d.lastRoundOrder.indexOf(name)>=d.lastRoundOrder.length-subsN;
+        return '<label class="lr-check-row'+(checked?' checked':'')+'"><input type="checkbox" data-lrsh="'+sh+'" data-lrlt="'+lt+'" data-lrname="'+name+'"'+(checked?' checked':'')+'><span class="lr-check-name">'+name+'</span>'+(isSub?'<span class="ps ps-extra">⇒ 遞補</span>':checked?'<span class="ps ps-done">✓ 填</span>':'')+'</label>';
       }).join('')
-      +'</div>'
-      +'<div class="lr-count'+(match?' ok':fillers.length>0?' err':'')+'">已勾選 '+fillers.length+' 人 / 需要 '+rem+' 人　'+(match?'✓ 正確':fillers.length>rem?'⚠ 勾選太多':'⚠ 勾選不足')+'</div>'
-      +(subsCount>0?'<div class="info-box info-warn" style="margin-top:8px;font-size:12px;">已發生 '+subsCount+' 次遞補</div>':'')
-      +'<div class="lr-section"><div class="lr-sec-title">備補順序（拖曳排序）</div>'
-      +'<div class="drag-list" id="standby-'+sh+'-'+lt+'">'
-      +standby.map((pi,idx)=>'<div class="drag-item" data-drag-idx="'+idx+'" data-pi="'+pi+'"><span class="drag-handle ti ti-grip-vertical"></span><span class="dl-name">'+(idx+1)+'. '+state[sh].people[pi]+'</span></div>').join('')
-      +(standby.length===0?'<div style="font-size:13px;color:#bbb;padding:8px;">無備補人員</div>':'')
-      +'</div></div></div>';
+      +'<div class="lr-count'+(match?' ok':d.lastRoundOrder.length>0?' err':'')+'">已勾選 '+d.lastRoundOrder.length+' 人 / 需要 '+rem+' 人　'+(match?'✓ 正確':d.lastRoundOrder.length>rem?'⚠ 勾選太多':'⚠ 勾選不足')+'</div>'
+      +(subsN>0?'<div class="info-box info-warn" style="margin-top:8px;font-size:12px;">已發生 '+subsN+' 次遞補</div>':'')
+      +'<div class="slabel" style="margin-top:14px;">最後一輪填假順位</div>'
+      +buildRankList(d.lastRoundOrder,'rl-lro-'+sh+'-'+lt,sh,lt,'lastRoundOrder')
+      +'<div class="slabel" style="margin-top:12px;">備補順位（遞補優先順序）</div>'
+      +buildRankList(d.standbyOrder,'rl-sbo-'+sh+'-'+lt,sh,lt,'standbyOrder')
+      +'</div>';
   }
 
-  // Round extras
+  // Extras
   const totalR=full+(rem>0?1:0);
   let extHTML='';
   if(totalR>0){
     extHTML='<div class="section"><div class="slabel">各輪額外插入</div>'
       +Array.from({length:totalR},(_,ri)=>{
-        const r=ri+1,ex=(D(sh,lt).roundExtras[r]||[]).filter(i=>i<N),isL=r===totalR&&rem>0;
+        const r=ri+1,exNames=d.roundExtras[r]||[],isL=r===totalR&&rem>0;
         return '<div class="extra-round-row"><div class="extra-round-label">第 '+r+' 輪前'+(isL?' <span style="font-size:11px;color:#aaa;">（最後一輪）</span>':'')+'</div>'
-          +'<div class="extra-chips">'+(ex.length===0?'<span style="font-size:12px;color:#bbb;">無額外插入</span>':ex.map((pi,ei)=>'<div class="echip">'+state[sh].people[pi]+'<button data-exsh="'+sh+'" data-exlt="'+lt+'" data-exr="'+r+'" data-exei="'+ei+'">×</button></div>').join(''))+'</div>'
-          +'<div class="add-extra-row"><select id="esel-'+sh+'-'+lt+'-'+r+'">'+state[sh].people.map((p,pi)=>'<option value="'+pi+'">'+p+'</option>').join('')+'</select>'
+          +'<div class="extra-chips">'+(exNames.length===0?'<span style="font-size:12px;color:#bbb;">無額外插入</span>':exNames.map((name,ei)=>'<div class="echip">'+name+'<button data-exsh="'+sh+'" data-exlt="'+lt+'" data-exr="'+r+'" data-exei="'+ei+'">×</button></div>').join(''))+'</div>'
+          +'<div class="add-extra-row"><select id="esel-'+sh+'-'+lt+'-'+r+'">'+d.fillOrder.map(n=>'<option value="'+n+'">'+n+'</option>').join('')+'</select>'
           +'<button class="add-extra-btn" data-addexsh="'+sh+'" data-addexlt="'+lt+'" data-addexr="'+r+'">＋ 新增</button></div></div>';
       }).join('')+'</div>';
   }
 
-  return '<div style="border-left:3px solid '+ltColor+';padding-left:10px;margin-bottom:14px;">'
-    +'<div class="lt-section-title">'+ltN+'設定</div>'
+  return '<div style="border-left:3px solid '+ltC+';padding-left:10px;margin-bottom:18px;">'
+    +'<div class="lt-section-title">'+ltN+' 設定</div>'
     +'<div class="section"><div class="slabel">每日可填格數</div>'
     +'<div class="batch-row"><span>批次設定全月</span><input type="number" id="bv-'+sh+'-'+lt+'" min="0" max="99" value="1" style="width:56px;"><span>格</span><button class="btn" data-bapsh="'+sh+'" data-baplt="'+lt+'">套用</button></div>'
-    +'<div class="card" style="padding:10px;"><div class="quota-grid">'+DAYS.map(d=>'<div class="qh">'+d+'</div>').join('')+qc+'</div></div></div>'
+    +'<div class="card" style="padding:10px;"><div class="quota-grid">'+DAYS.map(d2=>'<div class="qh">'+d2+'</div>').join('')+qc+'</div></div></div>'
     +'<div class="section"><div class="slabel">輪次規劃</div>'
     +'<div class="round-stats"><div class="rstat"><div class="rstat-label">總格數</div><div class="rstat-val">'+total+'</div></div><div class="rstat"><div class="rstat-label">額外插入</div><div class="rstat-val">'+extraCount+'</div></div><div class="rstat"><div class="rstat-label">完整輪次</div><div class="rstat-val">'+full+'</div></div><div class="rstat"><div class="rstat-label">最後一輪</div><div class="rstat-val">'+(rem>0?rem+'人':'—')+'</div></div></div>'
-    +'<div class="info-box" style="font-size:12px;">一般格數：'+total+' − '+extraCount+'（額外）＝ <strong>'+reg+'</strong> 格 → '+N+' 人 × '+full+' 輪'+(rem>0?' + 最後 '+rem+' 人':'，整除')+'</div></div>'
+    +'<div class="info-box" style="font-size:12px;">一般格數：'+total+'−'+extraCount+'（額外）＝<strong>'+reg+'</strong>格 → '+N+'人×'+full+'輪'+(rem>0?'+最後'+rem+'人':'，整除')+'</div></div>'
+    +'<div class="section"><div class="slabel">填假順位 <span style="font-size:11px;color:#aaa;font-weight:400;">（獨立於人員顯示順序，填假歷程依此固定）</span></div>'
+    +(hasHistory?'<div class="info-box info-warn" style="font-size:12px;margin-bottom:8px;">⚠ 本月已有填假紀錄，變更順位可能影響歷程顯示。建議在月初設定。</div>':'')
+    +foList+'</div>'
     +lrHTML+extHTML
-    +'<div style="margin-bottom:14px;"><button class="btn btn-danger" data-resetsh="'+sh+'" data-resetlt="'+lt+'">重置'+ltN+'本月資料</button></div>'
+    +'<div style="margin-bottom:8px;"><button class="btn btn-danger" data-resetsh="'+sh+'" data-resetlt="'+lt+'">重置'+ltN+'本月資料</button></div>'
     +'</div>';
 }
 
 function buildAdmin(){
   const sh=state.shift,y=state.year,m=state.month;
+  const peopleSortList=buildRankList(state[sh].people,'rl-ppl-'+sh,sh,null,'people');
   return '<div class="section"><div class="slabel">填假月份</div>'
     +'<div class="card month-nav"><button class="btn-icon" id="prev-month"><i class="ti ti-chevron-left"></i></button><span>'+y+' 年 '+MONTHS[m]+'</span><button class="btn-icon" id="next-month"><i class="ti ti-chevron-right"></i></button></div></div>'
-    +buildLTSettings(sh,'leave')
+    +buildLTSection(sh,'leave')
     +'<div class="divider"></div>'
-    +buildLTSettings(sh,'stay')
+    +buildLTSection(sh,'stay')
     +'<div class="divider"></div>'
-    +'<div class="section"><div class="slabel">填假人員順序（'+sh+'班）</div>'
-    +state[sh].people.map((p,i)=>'<div class="card person-row"><div class="rank">'+(i+1)+'</div><span class="pname">'+p+'</span><button class="btn-icon" data-up="'+i+'"><i class="ti ti-arrow-up"></i></button><button class="btn-icon" data-down="'+i+'"><i class="ti ti-arrow-down"></i></button><button class="btn-icon" data-del="'+i+'" style="color:#fca5a5;"><i class="ti ti-trash"></i></button></div>').join('')
-    +'<div class="add-row"><input type="text" id="new-person" placeholder="新增人員姓名"><button class="btn" id="add-person">新增</button></div></div>';
+    +'<div class="section"><div class="slabel">'+sh+'班 人員名單（顯示順序）</div>'
+    +peopleSortList
+    +'<div class="add-row"><input type="text" id="new-person" placeholder="新增人員姓名"><button class="btn" id="add-person">新增</button></div>'
+    +'<div class="info-box" style="margin-top:10px;font-size:12px;">新增人員後請到各假別的「填假順位」欄位確認並排序。</div></div>'
+    +buildAdminTools(sh);
+}
+
+function buildAdminTools(sh){
+  return '<div class="divider"></div>'
+    +'<div class="slabel"><i class="ti ti-shield-lock" style="font-size:14px;"></i>管理員工具</div>'
+    +['leave','stay'].map(lt=>{
+      const d=D(sh,lt),ltN=lt==='leave'?'休假':'外宿';
+      const done=isAllDone(sh,lt);
+      return '<div class="admin-tool-box">'
+        +'<div class="admin-tool-title"><i class="ti ti-tool"></i>'+ltN+'（輪次：'+d.turnIndex+' / '+computeSeq(sh,lt).length+'）'+(done?' ✓ 已完成':'')+'</div>'
+        +'<div class="admin-tool-row"><span>若額外插入導致系統卡住，或需強制修正順序：</span></div>'
+        +'<div class="admin-tool-row">'
+        +'<button class="btn-rollback" data-rbsh="'+sh+'" data-rblt="'+lt+'"><i class="ti ti-arrow-back-up" style="vertical-align:-2px;margin-right:4px;"></i>強制倒退一步</button>'
+        +'</div></div>';
+    }).join('');
 }
 
 // ── Fill ──
 function buildFill(){
   const sh=state.shift,lt=state.leaveType,y=state.year,m=state.month;
   const dim=getDIM(y,m),fd=getFD(y,m);
-  const entry=getCurEntry(sh,lt),done=!entry;
-  const name=done?'':state[sh].people[entry.pi];
+  const entry=getCurEntry(sh,lt),done=isAllDone(sh,lt);
+  const name=done?'':curName(sh,lt);
   const isExtra=entry&&entry.type==='extra';
   const{full,rem}=getRoundInfo(sh,lt);
-  const totalR=full+(rem>0?1:0);
-  const curRound=entry?entry.round:0;
-  const hasUndo=canUndo(sh,lt),lastF=lastFill(sh,lt);
+  const totalR=full+(rem>0?1:0),curRound=entry?entry.round:0;
+  const hasUnd=canUndo(sh,lt),lastF=lastFill(sh,lt);
+  const ltN=lt==='leave'?'休假':'外宿';
 
   let cells='';
   for(let i=0;i<fd;i++)cells+='<div class="day empty"></div>';
-  for(let d=1;d<=dim;d++){
-    const mx=getDM(sh,lt,d),booked=countBks(sh,lt,d),bks=getBks(sh,lt,d);
-    const isFull=booked>=mx&&mx>0,isSel=state.selectedDay===d;
-    // Check conflict for current filler
-    const fillerPi=entry?entry.pi:-1;
-    const isConflict=entry&&fillerPi>=0&&hasConflict(sh,lt,fillerPi,d);
+  for(let dd=1;dd<=dim;dd++){
+    const mx=getDM(sh,lt,dd),booked=countBks(sh,lt,dd),bks=getBks(sh,lt,dd);
+    const isFull=booked>=mx&&mx>0,isSel=state.selectedDay===dd;
+    const isConflict=entry&&hasConflict(sh,lt,entry.pi,dd);
     let cls='day',click=false;
     if(mx===0)cls+=' zero';
     else if(isConflict)cls+=' conflict';
@@ -510,41 +565,26 @@ function buildFill(){
     else if(isFull)cls+=' full';
     else if(done)cls+=' locked';
     else{cls+=' avail';click=true;}
-
-    // Show names from current lt
-    const chips=bks.map(b=>'<div class="nchip'+(b.type==='extra'?' extra':'')+(lt==='stay'?' stay':'')+'">'+((state[sh].people[b.pi]||'').slice(0,3))+'</div>').join('');
-    cells+='<div class="'+cls+'"'+(click?' data-day="'+d+'"':'')+'>'
-      +'<div class="dnum">'+d+'</div>'
-      +(mx>0?'<div class="dslot">'+booked+'/'+mx+'</div>':'<div class="dslot">休</div>')
-      +(chips?'<div class="dnames">'+chips+'</div>':'')
-      +'</div>';
+    const chips=bks.map(b=>'<div class="nchip'+(b.type==='extra'?' extra':'')+(lt==='stay'?' stay':'')+'">'+((nameAt(sh,lt,b.pi)).slice(0,3))+'</div>').join('');
+    cells+='<div class="'+cls+'"'+(click?' data-day="'+dd+'"':'')+'><div class="dnum">'+dd+'</div>'+(mx>0?'<div class="dslot">'+booked+'/'+mx+'</div>':'<div class="dslot">休</div>')+(chips?'<div class="dnames">'+chips+'</div>':'')+'</div>';
   }
 
-  const ltN=lt==='leave'?'休假':'外宿';
   const statusBox=done
     ?'<div class="info-box info-hl">🎉 本月'+ltN+'填假已完成！</div>'
     :isExtra
     ?'<div class="info-box info-warn">★ 額外插入：<strong>'+name+'</strong> 在第 '+curRound+' 輪前先填</div>'
     :'<div class="info-box info-hl"><i class="ti ti-user-check" style="vertical-align:-2px;margin-right:5px;"></i>現在輪到：<strong>'+name+'</strong>（第 '+curRound+'/'+totalR+' 輪'+(curRound===totalR&&rem>0?' · 最後一輪':'')+'）</div>';
 
-  return '<div class="lt-bar">'
-    +'<button class="lt-btn'+(lt==='leave'?' active':'')+'" data-lt="leave">休假</button>'
-    +'<button class="lt-btn'+(lt==='stay'?' active':'')+'" data-lt="stay">外宿</button>'
-    +'</div>'
+  return '<div class="lt-bar"><button class="lt-btn'+(lt==='leave'?' active':'')+'" data-lt="leave">休假</button><button class="lt-btn'+(lt==='stay'?' active':'')+'" data-lt="stay">外宿</button></div>'
     +statusBox
-    +'<div class="section"><div class="slabel">'+y+' 年 '+MONTHS[m]+' — '+ltN+'（每人每次一格）</div>'
-    +'<div class="cal-grid">'+DAYS.map(d=>'<div class="dh">'+d+'</div>').join('')+cells+'</div>'
-    +'<div class="legend">'
-    +'<span><div class="dsq" style="background:#dbeafe;border:1px solid #93c5fd;"></div>已填</span>'
-    +'<span><div class="dsq" style="background:#f0fdf4;border:1px solid #bbf7d0;"></div>額滿</span>'
-    +'<span><div class="dsq" style="background:#fef2f2;border:1px solid #fca5a5;"></div>已有'+(lt==='leave'?'外宿':'休假')+'（不可填）</span>'
-    +'</div></div>'
-    +(!done?'<div class="confirm-area">'
-      +'<div class="slabel">已選擇</div>'
+    +'<div class="section"><div class="slabel">'+y+' 年 '+MONTHS[m]+' — '+ltN+'</div>'
+    +'<div class="cal-grid">'+DAYS.map(d2=>'<div class="dh">'+d2+'</div>').join('')+cells+'</div>'
+    +'<div class="legend"><span><div class="dsq" style="background:#dbeafe;border:1px solid #93c5fd;"></div>已填</span><span><div class="dsq" style="background:#f0fdf4;border:1px solid #bbf7d0;"></div>額滿</span><span><div class="dsq" style="background:#fef2f2;border:1px solid #fca5a5;"></div>衝突</span></div></div>'
+    +(!done?'<div class="confirm-area"><div class="slabel">已選擇</div>'
       +'<div class="selected-display'+(state.selectedDay===null?' empty':'')+'">'+( state.selectedDay!==null?(m+1)+'/'+state.selectedDay+'（'+DAYS[new Date(y,m,state.selectedDay).getDay()]+'）':'尚未選擇，請點選日曆')+'</div>'
-      +'<button class="btn-primary" id="confirm-fill"'+(state.selectedDay===null?' disabled':'')+'> 確認填假 — '+name+(isExtra?' ★ 額外':'')+'</button>'
+      +'<button class="btn-primary" id="confirm-fill"'+(state.selectedDay===null?' disabled':'')+'>確認填假 — '+name+(isExtra?' ★ 額外':'')+'</button>'
       +'<button class="btn-skip" id="confirm-skip"><i class="ti ti-user-x" style="vertical-align:-2px;margin-right:4px;"></i>放棄填假（跳過 '+name+'，不佔格子）</button>'
-      +(hasUndo&&lastF?'<button class="btn-undo" id="undo-fill"><i class="ti ti-arrow-back-up" style="vertical-align:-2px;margin-right:4px;"></i>反悔收回：'+state[sh].people[lastF.pi]+' '+(lastF.m+1)+'/'+lastF.d+'</button>':'')
+      +(hasUnd&&lastF?'<button class="btn-undo" id="undo-fill"><i class="ti ti-arrow-back-up" style="vertical-align:-2px;margin-right:4px;"></i>反悔收回：'+nameAt(sh,lt,lastF.pi)+' '+(lastF.m+1)+'/'+lastF.d+'</button>':'')
       +'</div>':'');
 }
 
@@ -552,7 +592,6 @@ function buildFill(){
 function buildView(){
   const sh=state.shift,y=state.year,m=state.month;
   let html='<div class="top-actions"><button class="btn" id="refresh-btn"><i class="ti ti-refresh" style="vertical-align:-2px;margin-right:4px;"></i>重新整理</button><button class="btn btn-excel" id="export-excel"><i class="ti ti-file-spreadsheet" style="vertical-align:-2px;margin-right:4px;"></i>匯出 Excel</button></div>';
-
   for(const lt of['leave','stay']){
     const ltN=lt==='leave'?'休假':'外宿',ltC=lt==='leave'?'#2563eb':'#7c3aed';
     const dim=getDIM(y,m);
@@ -561,29 +600,27 @@ function buildView(){
     const mh=D(sh,lt).history.filter(h=>h.y===y&&h.m===m);
     const ms=D(sh,lt).skips.filter(s=>s.y===y&&s.m===m);
     const entry=getCurEntry(sh,lt),ci=entry?entry.pi:-1;
-
+    const allEv=[...mh.map(h=>({...h,ev:'fill'})),...ms.map(s=>({turn:s.turn,pi:s.pi,ev:'skip'}))].sort((a,b)=>a.turn-b.turn);
     html+='<div style="border-left:3px solid '+ltC+';padding-left:10px;margin-bottom:20px;">'
       +'<div class="lt-section-title">'+ltN+'</div>'
       +'<div class="grid2"><div class="metric"><div class="metric-label">總格數</div><div class="metric-val">'+total+'</div></div><div class="metric"><div class="metric-label">已填</div><div class="metric-val">'+used+'</div></div></div>'
       +'<div class="section"><div class="slabel">人員狀況</div>'
-      +state[sh].people.map((p,i)=>{
-        const days=mh.filter(h=>h.pi===i&&h.type==='regular').length;
-        const ext=mh.filter(h=>h.pi===i&&h.type==='extra').length;
-        const skipped=ms.filter(s=>s.pi===i).length;
+      +D(sh,lt).fillOrder.map((name,pi)=>{
+        const days=mh.filter(h=>h.pi===pi&&h.type==='regular').length;
+        const ext=mh.filter(h=>h.pi===pi&&h.type==='extra').length;
+        const skipped=ms.filter(s=>s.pi===pi).length;
         let sl,sc;
-        if(entry&&i===ci){sl=entry.type==='extra'?'額外插入中':'目前輪到';sc=entry.type==='extra'?'ps-extra':'ps-now';}
+        if(entry&&pi===ci){sl=entry.type==='extra'?'額外插入中':'目前輪到';sc=entry.type==='extra'?'ps-extra':'ps-now';}
         else if(days>0||ext>0){sl=days+'天'+(ext>0?' +'+ext+'額':'')+(skipped>0?' (棄'+skipped+')':'');sc='ps-done';}
         else if(skipped>0){sl='放棄'+skipped+'次';sc='ps-skip';}
         else{sl='等待中';sc='ps-wait';}
-        return '<div class="card person-row"><div class="rank">'+(i+1)+'</div><span class="pname">'+p+'</span><span class="ps '+sc+'">'+sl+'</span></div>';
-      }).join('')+'</div>';
-
-    const allEv=[...mh.map(h=>({...h,ev:'fill'})),...ms.map(s=>({turn:s.turn,pi:s.pi,ev:'skip'}))].sort((a,b)=>a.turn-b.turn);
-    html+='<div class="section"><div class="slabel">歷程</div>'
+        return '<div class="card person-row"><div class="rank">'+(pi+1)+'</div><span class="pname">'+name+'</span><span class="ps '+sc+'">'+sl+'</span></div>';
+      }).join('')+'</div>'
+      +'<div class="section"><div class="slabel">歷程</div>'
       +(allEv.length===0?'<div class="info-box">尚無紀錄</div>':'<div class="card" style="padding:8px 14px;">'
         +allEv.map(ev=>{
-          if(ev.ev==='skip')return '<div class="history-row"><span class="tnum">#'+ev.turn+'</span><span style="font-weight:500;min-width:60px;color:#dc2626;">'+state[sh].people[ev.pi]+'</span><span style="color:#dc2626;font-size:13px;">放棄</span></div>';
-          return '<div class="history-row"><span class="tnum">#'+ev.turn+'</span><span style="font-weight:500;min-width:60px;">'+state[sh].people[ev.pi]+'</span><span style="color:#888;font-size:13px;">'+(ev.m+1)+'/'+ev.d+'（'+DAYS[new Date(ev.y,ev.m,ev.d).getDay()]+'）</span>'+(ev.type==='extra'?'<span class="ps ps-extra" style="margin-left:auto;">額外</span>':'')+'</div>';
+          if(ev.ev==='skip')return '<div class="history-row"><span class="tnum">#'+ev.turn+'</span><span style="font-weight:500;min-width:60px;color:#dc2626;">'+nameAt(sh,lt,ev.pi)+'</span><span style="color:#dc2626;font-size:13px;">放棄</span></div>';
+          return '<div class="history-row"><span class="tnum">#'+ev.turn+'</span><span style="font-weight:500;min-width:60px;">'+nameAt(sh,lt,ev.pi)+'</span><span style="color:#888;font-size:13px;">'+(ev.m+1)+'/'+ev.d+'（'+DAYS[new Date(ev.y,ev.m,ev.d).getDay()]+'）</span>'+(ev.type==='extra'?'<span class="ps ps-extra" style="margin-left:auto;">額外</span>':'')+'</div>';
         }).join('')+'</div>')
       +'</div></div>';
   }
@@ -596,135 +633,82 @@ function bindEvents(){
   document.querySelectorAll('[data-shift]').forEach(b=>b.addEventListener('click',()=>{state.shift=b.dataset.shift;state.selectedDay=null;render();}));
   document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{state.tab=b.dataset.tab;state.selectedDay=null;render();}));
   document.querySelectorAll('[data-lt]').forEach(b=>b.addEventListener('click',()=>{state.leaveType=b.dataset.lt;state.selectedDay=null;render();}));
-
   const pm=document.getElementById('prev-month');
   if(pm)pm.addEventListener('click',async()=>{if(state.month===0){state.month=11;state.year--;}else state.month--;state.selectedDay=null;for(const s of['A','B'])await saveShift(s);render();});
   const nm=document.getElementById('next-month');
   if(nm)nm.addEventListener('click',async()=>{if(state.month===11){state.month=0;state.year++;}else state.month++;state.selectedDay=null;for(const s of['A','B'])await saveShift(s);render();});
-
-  // Quota buttons
   document.querySelectorAll('[data-qd]').forEach(b=>b.addEventListener('click',async()=>{
-    const bsh=b.dataset.sh,blt=b.dataset.lt,d=parseInt(b.dataset.qd),delta=parseInt(b.dataset.delta);
-    setDM(bsh,blt,d,getDM(bsh,blt,d)+delta);
-    render();await saveShift(bsh);
+    const bsh=b.dataset.sh,blt=b.dataset.lt,dd=parseInt(b.dataset.qd),delta=parseInt(b.dataset.delta);
+    setDM(bsh,blt,dd,getDM(bsh,blt,dd)+delta);render();await saveShift(bsh);
   }));
   document.querySelectorAll('[data-bapsh]').forEach(b=>b.addEventListener('click',async()=>{
-    const bsh=b.dataset.bapsh,blt=b.dataset.baplt;
-    const v=parseInt(document.getElementById('bv-'+bsh+'-'+blt).value)||0;
-    const dim=getDIM(state.year,state.month);
-    for(let d=1;d<=dim;d++)setDM(bsh,blt,d,v);
+    const bsh=b.dataset.bapsh,blt=b.dataset.baplt,v=parseInt(document.getElementById('bv-'+bsh+'-'+blt).value)||0;
+    const dim=getDIM(state.year,state.month);for(let dd=1;dd<=dim;dd++)setDM(bsh,blt,dd,v);
     render();await saveShift(bsh);
   }));
-
-  // People order
-  document.querySelectorAll('[data-up]').forEach(b=>b.addEventListener('click',async()=>{
-    const i=parseInt(b.dataset.up);
-    if(i>0){[state[sh].people[i-1],state[sh].people[i]]=[state[sh].people[i],state[sh].people[i-1]];render();await saveShift(sh);}
-  }));
-  document.querySelectorAll('[data-down]').forEach(b=>b.addEventListener('click',async()=>{
-    const i=parseInt(b.dataset.down);
-    if(i<state[sh].people.length-1){[state[sh].people[i+1],state[sh].people[i]]=[state[sh].people[i],state[sh].people[i+1]];render();await saveShift(sh);}
-  }));
-  document.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{state[sh].people.splice(parseInt(b.dataset.del),1);render();await saveShift(sh);}));
+  // People
   const ap=document.getElementById('add-person');
-  if(ap)ap.addEventListener('click',async()=>{const inp=document.getElementById('new-person');if(inp&&inp.value.trim()){state[sh].people.push(inp.value.trim());inp.value='';render();await saveShift(sh);}});
-
+  if(ap)ap.addEventListener('click',async()=>{
+    const inp=document.getElementById('new-person');const n=inp&&inp.value.trim();if(!n)return;
+    if(!state[sh].people.includes(n))state[sh].people.push(n);
+    for(const lt of['leave','stay']){
+      if(!D(sh,lt).fillOrder.includes(n))D(sh,lt).fillOrder.push(n);
+      if(!D(sh,lt).lastRoundOrder.includes(n)&&!D(sh,lt).standbyOrder.includes(n))D(sh,lt).standbyOrder.push(n);
+    }
+    if(inp)inp.value='';render();await saveShift(sh);
+  });
   // Last round checkboxes
-  document.querySelectorAll('[data-lrpi]').forEach(cb=>cb.addEventListener('change',async()=>{
-    const bsh=cb.dataset.lrsh,blt=cb.dataset.lrlt,pi=parseInt(cb.dataset.lrpi);
-    if(cb.checked){if(!D(bsh,blt).lastRoundSelected.includes(pi))D(bsh,blt).lastRoundSelected.push(pi);}
-    else{D(bsh,blt).lastRoundSelected=D(bsh,blt).lastRoundSelected.filter(x=>x!==pi);}
+  document.querySelectorAll('[data-lrname]').forEach(cb=>cb.addEventListener('change',async()=>{
+    const bsh=cb.dataset.lrsh,blt=cb.dataset.lrlt,name=cb.dataset.lrname;
+    if(cb.checked){
+      D(bsh,blt).lastRoundOrder.push(name);
+      D(bsh,blt).standbyOrder=D(bsh,blt).standbyOrder.filter(n=>n!==name);
+    } else {
+      D(bsh,blt).lastRoundOrder=D(bsh,blt).lastRoundOrder.filter(n=>n!==name);
+      if(!D(bsh,blt).standbyOrder.includes(name))D(bsh,blt).standbyOrder.push(name);
+    }
     render();await saveShift(bsh);
   }));
-
   // Extras
   document.querySelectorAll('[data-addexsh]').forEach(b=>b.addEventListener('click',async()=>{
     const bsh=b.dataset.addexsh,blt=b.dataset.addexlt,r=parseInt(b.dataset.addexr);
     const sel=document.getElementById('esel-'+bsh+'-'+blt+'-'+r);if(!sel)return;
-    const pi=parseInt(sel.value);
     if(!D(bsh,blt).roundExtras[r])D(bsh,blt).roundExtras[r]=[];
-    D(bsh,blt).roundExtras[r].push(pi);
-    render();await saveShift(bsh);
+    D(bsh,blt).roundExtras[r].push(sel.value);
+    capTurnIndex(bsh,blt);render();await saveShift(bsh);
   }));
   document.querySelectorAll('[data-exsh]').forEach(b=>b.addEventListener('click',async()=>{
     const bsh=b.dataset.exsh,blt=b.dataset.exlt,r=parseInt(b.dataset.exr),ei=parseInt(b.dataset.exei);
     D(bsh,blt).roundExtras[r].splice(ei,1);
-    render();await saveShift(bsh);
+    capTurnIndex(bsh,blt);render();await saveShift(bsh);
   }));
   document.querySelectorAll('[data-resetsh]').forEach(b=>b.addEventListener('click',()=>resetMonth(b.dataset.resetsh,b.dataset.resetlt)));
-
-  // Fill tab
+  document.querySelectorAll('[data-rbsh]').forEach(b=>b.addEventListener('click',()=>adminRollback(b.dataset.rbsh,b.dataset.rblt)));
+  // Rank list sort
+  document.querySelectorAll('[data-rlid]').forEach(btn=>btn.addEventListener('click',async()=>{
+    const listId=btn.dataset.rlid,bsh=btn.dataset.rlsh,blt=btn.dataset.rllt,field=btn.dataset.rlfield;
+    const listEl=document.getElementById(listId);if(!listEl)return;
+    const items=[...listEl.querySelectorAll('.rank-item')];
+    const pairs=items.map(item=>{
+      const name=item.querySelector('.rank-item-name').textContent;
+      const num=parseFloat(item.querySelector('.rank-num-input').value)||0;
+      return{name,num};
+    });
+    pairs.sort((a,b)=>a.num-b.num);
+    const sorted=pairs.map(p=>p.name);
+    if(field==='people'){state[bsh].people=sorted;}
+    else{D(bsh,blt)[field]=sorted;}
+    render();await saveShift(bsh);
+  }));
+  // Fill
   document.querySelectorAll('[data-day]').forEach(c=>c.addEventListener('click',()=>{
     const d=parseInt(c.dataset.day);state.selectedDay=state.selectedDay===d?null:d;render();
   }));
   const cf=document.getElementById('confirm-fill');if(cf)cf.addEventListener('click',confirmFill);
   const cs=document.getElementById('confirm-skip');if(cs)cs.addEventListener('click',confirmSkip);
   const cu=document.getElementById('undo-fill');if(cu)cu.addEventListener('click',undoLast);
-
-  // View
   const rfr=document.getElementById('refresh-btn');if(rfr)rfr.addEventListener('click',()=>{state.loading=true;render();loadDB();});
   const ee=document.getElementById('export-excel');if(ee)ee.addEventListener('click',exportExcel);
-}
-
-// ── Drag Sort ──
-let _drag=null;
-function setupDragLists(){
-  document.querySelectorAll('.drag-list[id^="standby-"]').forEach(list=>{
-    const id=list.id;
-    const parts=id.split('-');// standby-A-leave or standby-B-stay
-    const bsh=parts[1],blt=parts[2];
-    setupDragList(list,bsh,blt);
-  });
-}
-function setupDragList(container,bsh,blt){
-  const handles=container.querySelectorAll('.drag-handle');
-  handles.forEach(handle=>{
-    handle.addEventListener('mousedown',e=>{
-      e.preventDefault();
-      const item=handle.closest('.drag-item');
-      if(!item)return;
-      const items=[...container.querySelectorAll('.drag-item')];
-      const fromIdx=items.indexOf(item);
-      _drag={container,bsh,blt,fromIdx,item,items,toIdx:null};
-      item.classList.add('dragging');
-      document.addEventListener('mousemove',onDragMove);
-      document.addEventListener('mouseup',onDragUp);
-    });
-  });
-}
-function onDragMove(e){
-  if(!_drag)return;
-  const{container,item,items}=_drag;
-  items.forEach(it=>it.classList.remove('drag-over'));
-  let toIdx=items.length;
-  for(let i=0;i<items.length;i++){
-    if(items[i]===item)continue;
-    const rect=items[i].getBoundingClientRect();
-    if(e.clientY<rect.top+rect.height/2){toIdx=i;break;}
-  }
-  _drag.toIdx=toIdx;
-  if(toIdx<items.length)items[toIdx].classList.add('drag-over');
-}
-async function onDragUp(e){
-  if(!_drag)return;
-  const{container,bsh,blt,fromIdx,item,items,toIdx}=_drag;
-  item.classList.remove('dragging');
-  items.forEach(it=>it.classList.remove('drag-over'));
-  document.removeEventListener('mousemove',onDragMove);
-  document.removeEventListener('mouseup',onDragUp);
-  _drag=null;
-  if(toIdx===null||toIdx===fromIdx||toIdx===fromIdx+1)return;
-  // Reorder lastRoundStandby
-  const selected=D(bsh,blt).lastRoundSelected;
-  const N=state[bsh].people.length;
-  const standby=D(bsh,blt).lastRoundStandby.filter(i=>i<N&&!selected.includes(i));
-  const moved=standby[fromIdx];
-  standby.splice(fromIdx,1);
-  const insertAt=toIdx>fromIdx?toIdx-1:toIdx;
-  standby.splice(insertAt,0,moved);
-  // Rebuild full standby array (preserve selected references)
-  D(bsh,blt).lastRoundStandby=standby;
-  render();await saveShift(bsh);
 }
 
 // ── Excel ──
@@ -733,24 +717,23 @@ function exportExcel(){
   const wb=XLSX.utils.book_new();
   for(const lt of['leave','stay']){
     const ltN=lt==='leave'?'休假':'外宿';
-    const c=[['日期','星期','一般填假人員','額外插入人員','已填','上限']];
-    for(let d=1;d<=dim;d++){
-      const dow=new Date(y,m,d).getDay(),bks=getBks(sh,lt,d);
-      const reg=bks.filter(b=>b.type==='regular').map(b=>state[sh].people[b.pi]).join('、');
-      const ext=bks.filter(b=>b.type==='extra').map(b=>state[sh].people[b.pi]).join('、');
-      c.push([y+'/'+(m+1)+'/'+d,DAYS[dow],reg,ext,bks.length,getDM(sh,lt,d)]);
+    const c=[['日期','星期','已填人員（一般）','額外人員','已填','上限']];
+    for(let dd=1;dd<=dim;dd++){
+      const dow=new Date(y,m,dd).getDay(),bks=getBks(sh,lt,dd);
+      const reg=bks.filter(b=>b.type==='regular').map(b=>nameAt(sh,lt,b.pi)).join('、');
+      const ext=bks.filter(b=>b.type==='extra').map(b=>nameAt(sh,lt,b.pi)).join('、');
+      c.push([y+'/'+(m+1)+'/'+dd,DAYS[dow],reg,ext,bks.length,getDM(sh,lt,dd)]);
     }
     const ws=XLSX.utils.aoa_to_sheet(c);ws['!cols']=[{wch:12},{wch:6},{wch:24},{wch:14},{wch:6},{wch:6}];
     XLSX.utils.book_append_sheet(wb,ws,(m+1)+'月'+ltN);
   }
-  // Summary sheet
-  const sc=[['班別','類型','姓名','填假天數','額外','放棄']];
+  const sc=[['假別','填假順位','姓名','填假天數','額外','放棄']];
   for(const lt of['leave','stay']){
     const ltN=lt==='leave'?'休假':'外宿';
     const mh=D(sh,lt).history.filter(h=>h.y===y&&h.m===m);
     const ms=D(sh,lt).skips.filter(s=>s.y===y&&s.m===m);
-    state[sh].people.forEach((p,pi)=>{
-      sc.push([sh+'班',ltN,p,mh.filter(h=>h.pi===pi&&h.type==='regular').length,mh.filter(h=>h.pi===pi&&h.type==='extra').length,ms.filter(s=>s.pi===pi).length]);
+    D(sh,lt).fillOrder.forEach((name,pi)=>{
+      sc.push([ltN,pi+1,name,mh.filter(h=>h.pi===pi&&h.type==='regular').length,mh.filter(h=>h.pi===pi&&h.type==='extra').length,ms.filter(s=>s.pi===pi).length]);
     });
   }
   const ws2=XLSX.utils.aoa_to_sheet(sc);ws2['!cols']=[{wch:6},{wch:8},{wch:10},{wch:10},{wch:6},{wch:6}];
