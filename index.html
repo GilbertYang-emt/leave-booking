@@ -218,6 +218,8 @@ async function loadDB(){
         if(!d.standbyOrder.length)d.standbyOrder=state[sh].people.filter(n=>!d.lastRoundOrder.includes(n));
       }
     }
+    // Reset before reload to avoid duplicates
+    for(const sh of['A','B'])for(const lt of['leave','stay']){D(sh,lt).bookings={};D(sh,lt).history=[];}
     // Load bookings (person_index = index into fillOrder)
     const{data:bks}=await sb.from('bookings').select('*');
     if(bks){
