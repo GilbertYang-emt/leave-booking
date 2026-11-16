@@ -145,6 +145,27 @@ input:focus,select:focus{outline:none;border-color:#999;}
 .admin-tool-title{font-size:13px;font-weight:700;color:#6d28d9;margin-bottom:10px;display:flex;align-items:center;gap:5px;}
 .admin-tool-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
 .admin-tool-row span{font-size:13px;color:#555;}
+/* 年度抽籤 */
+.subtabs{display:flex;gap:4px;background:#e8e8e2;border-radius:12px;padding:4px;margin-bottom:16px;}
+.subtab{flex:1;padding:8px;font-size:13px;cursor:pointer;border:none;background:none;color:#666;border-radius:8px;font-weight:500;}
+.subtab.active{background:#fff;color:#1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,.1);}
+.draw-month{background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:12px 14px;margin-bottom:8px;}
+.draw-month-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.draw-month-title{font-weight:700;font-size:15px;min-width:42px;}
+.draw-order{display:flex;flex-wrap:wrap;gap:4px 6px;font-size:13px;}
+.draw-order span{background:#f5f5f0;border-radius:6px;padding:2px 7px;}
+.draw-order b{color:#2563eb;font-weight:600;margin-right:3px;}
+.seed{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:#999;margin-top:6px;word-break:break-all;}
+.part-row{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;background:#f5f5f0;border-radius:9px;margin:0 6px 6px 0;font-size:13px;cursor:pointer;}
+.part-row input{accent-color:#1a1a1a;}
+.btn-draw{background:#2563eb;color:#fff;border:none;width:100%;padding:12px;font-size:15px;border-radius:10px;cursor:pointer;font-weight:600;}
+.btn-draw:hover{background:#1d4ed8;}
+.btn-draw:disabled{opacity:.4;cursor:not-allowed;}
+.btn-mini{padding:4px 10px;font-size:12px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;color:#555;margin-left:auto;}
+.btn-mini:hover{background:#f5f5f0;}
+.btn-mini:disabled{opacity:.35;cursor:not-allowed;}
+.log-row{font-size:12px;color:#666;padding:7px 0;border-bottom:1px solid #f0f0ea;line-height:1.6;}
+.log-row:last-child{border-bottom:none;}
 </style>
 </head>
 <body>
@@ -174,7 +195,7 @@ function defLT(){
   return {fillOrder:[],lastRoundOrder:[],standbyOrder:[],dailyMax:{},bookings:{},turnIndex:0,history:[],roundExtras:{},skips:[],lastRoundSubs:0,dropouts:[]};
 }
 function defSh(){return {people:[],leave:defLT(),stay:defLT()};}
-let state={tab:'fill',shift:'A',leaveType:'leave',year:now.getFullYear(),month:now.getMonth(),selectedDay:null,loading:true,roster:[],A:defSh(),B:defSh()};
+let state={tab:'fill',shift:'A',leaveType:'leave',year:now.getFullYear(),month:now.getMonth(),selectedDay:null,loading:true,roster:[],cfg:{},legacyYM:null,adminTab:'settings',drawYear:null,drawExclude:{A:[],B:[]},verifyMsg:null,A:defSh(),B:defSh()};
 
 function ss(){return state[state.shift];}
 function D(sh,lt){return state[sh][lt];}
@@ -192,8 +213,10 @@ async function loadDB(){
   setSS('syncing');
   try{
     const{data:settings}=await sb.from('settings').select('*');
+    state.cfg={};
     if(settings){
       for(const r of settings){
+        state.cfg[r.key]=r.value;
         if(r.key==='year')state.year=r.value;
         if(r.key==='month')state.month=r.value;
         if(r.key==='roster')state.roster=r.value||[];
@@ -201,28 +224,21 @@ async function loadDB(){
           if(r.key===sh+'_people')state[sh].people=r.value||[];
           for(const lt of['leave','stay']){
             const p=sh+'_'+lt+'_';
-            if(r.key===p+'fillOrder')D(sh,lt).fillOrder=r.value||[];
-            if(r.key===p+'lastRoundOrder')D(sh,lt).lastRoundOrder=r.value||[];
-            if(r.key===p+'standbyOrder')D(sh,lt).standbyOrder=r.value||[];
             if(r.key===p+'dailyMax')D(sh,lt).dailyMax=r.value||{};
-            if(r.key===p+'turnIndex')D(sh,lt).turnIndex=r.value||0;
-            if(r.key===p+'roundExtras')D(sh,lt).roundExtras=r.value||{};
             if(r.key===p+'skips')D(sh,lt).skips=r.value||[];
-            if(r.key===p+'lastRoundSubs')D(sh,lt).lastRoundSubs=r.value||0;
-            if(r.key===p+'dropouts')D(sh,lt).dropouts=r.value||[];
           }
         }
       }
     }
-    // Defaults
     for(const sh of['A','B']){
       if(!state[sh].people.length)state[sh].people=sh==='A'?['張小明','李美玲','王大偉']:['陳雅琪','林志豪'];
-      for(const lt of['leave','stay']){
-        const d=D(sh,lt);
-        if(!d.fillOrder.length)d.fillOrder=[...state[sh].people];
-        if(!d.standbyOrder.length)d.standbyOrder=state[sh].people.filter(n=>!d.lastRoundOrder.includes(n));
-      }
     }
+    // 舊版資料（未分月份）屬於哪個月份：第一次載入時記錄下來，之後固定
+    if(state.cfg['legacy_ym']===undefined){
+      state.cfg['legacy_ym']=state.year+'-'+state.month;
+      saveSetting('legacy_ym',state.cfg['legacy_ym']);
+    }
+    state.legacyYM=state.cfg['legacy_ym'];
     // Reset before reload to avoid duplicates
     for(const sh of['A','B'])for(const lt of['leave','stay']){D(sh,lt).bookings={};D(sh,lt).history=[];}
     // Load bookings (person_index = index into fillOrder)
@@ -237,23 +253,80 @@ async function loadDB(){
       }
       for(const sh of['A','B'])for(const lt of['leave','stay'])D(sh,lt).history.sort((a,b2)=>a.turn-b2.turn);
     }
+    applyMonthConfig();
+    // 一次性搬移：舊版未分月份的設定寫入其所屬月份
+    if(state.legacyYM===(state.year+'-'+state.month)&&state.cfg[mKey('A','leave',state.year,state.month,'fillOrder')]===undefined){
+      await saveShift('A');await saveShift('B');
+    }
     state.loading=false;setSS('ok');
   }catch(e){setSS('error');state.loading=false;}
   render();
 }
 
-async function saveSetting(k,v){await sb.from('settings').upsert({key:k,value:v,updated_at:new Date().toISOString()});}
+async function saveSetting(k,v){
+  state.cfg[k]=JSON.parse(JSON.stringify(v===undefined?null:v));
+  await sb.from('settings').upsert({key:k,value:v,updated_at:new Date().toISOString()});
+}
+// ── 每月獨立設定 ──
+const MONTH_FIELDS=['fillOrder','lastRoundOrder','standbyOrder','turnIndex','roundExtras','lastRoundSubs','dropouts'];
+function mKey(sh,lt,y,m,f){return sh+'_'+lt+'_'+y+'-'+m+'_'+f;}
+function clone(v){return v===undefined||v===null?v:JSON.parse(JSON.stringify(v));}
+function monthHasActivity(sh,lt,y,m){
+  const d=D(sh,lt);
+  return d.history.some(h=>h.y===y&&h.m===m)||d.skips.some(s=>s.y===y&&s.m===m);
+}
+function drawOrderFor(sh,y,m){
+  const dr=getDraw(sh,y),r=dr&&dr.months[m];
+  return r&&r.status==='official'?r.order:null;
+}
+// 讀取某月設定（不寫入 state），供套用與比對
+function readMonthConfig(sh,lt,y,m){
+  const isLegacy=state.legacyYM===(y+'-'+m);
+  const out={};
+  for(const f of MONTH_FIELDS){
+    let v=state.cfg[mKey(sh,lt,y,m,f)];
+    if(v===undefined&&isLegacy)v=state.cfg[sh+'_'+lt+'_'+f];
+    out[f]=clone(v);
+  }
+  return out;
+}
+function applyMonthConfig(){
+  const y=state.year,m=state.month;
+  for(const sh of['A','B'])for(const lt of['leave','stay']){
+    const d=D(sh,lt),mc=readMonthConfig(sh,lt,y,m),ppl=state[sh].people;
+    let fo=mc.fillOrder;
+    if(!fo||!fo.length){
+      const drawn=lt==='leave'?drawOrderFor(sh,y,m):null;
+      fo=drawn?[...drawn]:clone(state.cfg[sh+'_'+lt+'_template'])||clone(state.cfg[sh+'_'+lt+'_fillOrder'])||[...ppl];
+      mc.lastRoundOrder=[];mc.standbyOrder=null;mc.turnIndex=0;mc.lastRoundSubs=0;mc.dropouts=[];
+    }
+    d.fillOrder=fo;
+    d.lastRoundOrder=mc.lastRoundOrder||[];
+    d.standbyOrder=mc.standbyOrder||[];
+    d.turnIndex=mc.turnIndex||0;
+    d.roundExtras=mc.roundExtras||{};
+    d.lastRoundSubs=mc.lastRoundSubs||0;
+    d.dropouts=mc.dropouts||[];
+    // 本月尚未開始填假時，依目前人員名單自動校正（移除已離開者、補上新加入者）
+    if(!monthHasActivity(sh,lt,y,m)){
+      d.fillOrder=d.fillOrder.filter(n=>ppl.includes(n));
+      for(const n of ppl)if(!d.fillOrder.includes(n))d.fillOrder.push(n);
+      d.lastRoundOrder=d.lastRoundOrder.filter(n=>ppl.includes(n));
+      d.standbyOrder=d.standbyOrder.filter(n=>ppl.includes(n)&&!d.lastRoundOrder.includes(n));
+      for(const n of d.fillOrder)if(!d.lastRoundOrder.includes(n)&&!d.standbyOrder.includes(n))d.standbyOrder.push(n);
+    }
+  }
+}
 async function saveShift(sh){
   setSS('syncing');
   const saves=[saveSetting(sh+'_people',state[sh].people),saveSetting('year',state.year),saveSetting('month',state.month),saveSetting('roster',state.roster)];
   for(const lt of['leave','stay']){
     const p=sh+'_'+lt+'_',d=D(sh,lt);
     saves.push(
-      saveSetting(p+'fillOrder',d.fillOrder),saveSetting(p+'lastRoundOrder',d.lastRoundOrder),
-      saveSetting(p+'standbyOrder',d.standbyOrder),saveSetting(p+'dailyMax',d.dailyMax),
-      saveSetting(p+'turnIndex',d.turnIndex),saveSetting(p+'roundExtras',d.roundExtras),
-      saveSetting(p+'skips',d.skips),saveSetting(p+'lastRoundSubs',d.lastRoundSubs),saveSetting(p+'dropouts',d.dropouts)
+      saveSetting(p+'dailyMax',d.dailyMax),saveSetting(p+'skips',d.skips)
     );
+    for(const f of MONTH_FIELDS)saves.push(saveSetting(mKey(sh,lt,state.year,state.month,f),d[f]));
+    saves.push(saveSetting(p+'template',d.fillOrder));
   }
   await Promise.all(saves);setSS('ok');
 }
@@ -554,7 +627,8 @@ function buildHTML(){
       +'<span style="font-weight:700;font-size:15px;"><i class="ti ti-settings" style="vertical-align:-2px;margin-right:4px;"></i>管理設定</span>'
       +'</div>'
       +shiftBar
-      +buildAdmin();
+      +'<div class="subtabs"><button class="subtab'+(state.adminTab==='settings'?' active':'')+'" data-admintab="settings">月份設定</button><button class="subtab'+(state.adminTab==='draw'?' active':'')+'" data-admintab="draw">年度抽籤</button></div>'
+      +(state.adminTab==='draw'?buildDraw(state.shift):buildAdmin());
   }
   return shiftBar
     +'<div class="tabs"><button class="tab'+(state.tab==='fill'?' active':'')+'" data-tab="fill">填假</button><button class="tab'+(state.tab==='view'?' active':'')+'" data-tab="view">總覽</button></div>'
@@ -635,6 +709,7 @@ function buildLTSection(sh,lt){
        +(rem===0&&extraCount>0&&d.lastRoundOrder.length>0?'<div class="info-box info-warn" style="font-size:12px;">ℹ 額外插入使格數剛好整除，本月不需要最後一輪，先前的最後一輪勾選暫不套用（移除額外插入即恢復）。</div>':''))
     +'</div>'
     +'<div class="section"><div class="slabel">填假順位 <span style="font-size:11px;color:#aaa;font-weight:400;">（獨立於人員顯示順序，填假歷程依此固定）</span></div>'
+    +(lt==='leave'?drawSourceNote(sh):'')
     +(hasHistory?'<div class="info-box info-warn" style="font-size:12px;margin-bottom:8px;">⚠ 本月已有填假紀錄，變更順位可能影響歷程顯示。建議在月初設定。</div>':'')
     +foList+'</div>'
     +lrHTML+extHTML
@@ -790,6 +865,7 @@ function buildView(){
         }).join('')+'</div>')
       +'</div></div>';
   }
+  html+=buildDrawPublic(sh,y);
   return html;
 }
 
@@ -802,9 +878,9 @@ function bindEvents(){
   document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{state.tab=b.dataset.tab;state.selectedDay=null;render();}));
   document.querySelectorAll('[data-lt]').forEach(b=>b.addEventListener('click',()=>{state.leaveType=b.dataset.lt;state.selectedDay=null;render();}));
   const pm=document.getElementById('prev-month');
-  if(pm)pm.addEventListener('click',async()=>{if(state.month===0){state.month=11;state.year--;}else state.month--;state.selectedDay=null;for(const s of['A','B'])await saveShift(s);render();});
+  if(pm)pm.addEventListener('click',async()=>{if(state.month===0){state.month=11;state.year--;}else state.month--;state.selectedDay=null;applyMonthConfig();render();for(const s of['A','B'])await saveShift(s);});
   const nm=document.getElementById('next-month');
-  if(nm)nm.addEventListener('click',async()=>{if(state.month===11){state.month=0;state.year++;}else state.month++;state.selectedDay=null;for(const s of['A','B'])await saveShift(s);render();});
+  if(nm)nm.addEventListener('click',async()=>{if(state.month===11){state.month=0;state.year++;}else state.month++;state.selectedDay=null;applyMonthConfig();render();for(const s of['A','B'])await saveShift(s);});
   document.querySelectorAll('[data-qd]').forEach(b=>b.addEventListener('click',async()=>{
     const bsh=b.dataset.sh,blt=b.dataset.lt,dd=parseInt(b.dataset.qd),delta=parseInt(b.dataset.delta);
     setDM(bsh,blt,dd,getDM(bsh,blt,dd)+delta);render();await saveShift(bsh);
@@ -916,9 +992,373 @@ function bindEvents(){
   const cu=document.getElementById('undo-fill');if(cu)cu.addEventListener('click',undoLast);
   const rfr=document.getElementById('refresh-btn');if(rfr)rfr.addEventListener('click',()=>{state.loading=true;render();loadDB();});
   const ee=document.getElementById('export-excel');if(ee)ee.addEventListener('click',exportExcel);
+  bindDrawEvents();
 }
 
 // ── Excel ──
+
+// ══════════ 年度抽籤（休假） ══════════
+// 每個月各自有狀態：試抽（draft，可重抽／清除，不公開、不套用、不留紀錄）→ 鎖定（official，公開、套用、留紀錄、不可清除）
+// 可一次處理全年，也可單獨處理任一月份。
+// 公正性設計：
+// 1. 參加名單先依「文字編碼」固定排序，管理者無法藉由調整輸入順序影響結果
+// 2. 每月各自以 crypto.getRandomValues 產生 128 位元隨機種子
+// 3. 以 SHA-256(種子|年|月|序號) 產生亂數流，拒絕取樣避免取餘數偏差，再以 Fisher-Yates 洗牌
+// 4. 正式結果的種子、名單、時間全部公開；正式後重抽需填原因並留紀錄；任何人可按「驗證」重算比對
+const ALL_MONTHS=[0,1,2,3,4,5,6,7,8,9,10,11];
+function drawKey(sh,y){return 'draw_'+sh+'_'+y;}
+// 舊版資料（整年一個狀態）轉成每月各自的狀態
+function normDraw(dr){
+  if(!dr)return null;
+  if(!dr.months)dr.months={};
+  if(!dr.log)dr.log=[];
+  const keys=Object.keys(dr.months);
+  if(keys.some(k=>!dr.months[k].status)){
+    const yearOfficial=dr.status==='official';
+    for(const k of keys){
+      const r=dr.months[k];
+      if(!r.status)r.status=yearOfficial?'official':'draft';
+      if(r.status==='official'&&!r.lockedAt)r.lockedAt=dr.lockedAt||r.at;
+    }
+    if(!yearOfficial)dr.log=[]; // 舊版試抽留下的紀錄不算正式紀錄
+  }
+  delete dr.status;delete dr.lockedAt;
+  return dr;
+}
+function getDraw(sh,y){return normDraw(state.cfg[drawKey(sh,y)]||null);}
+function monthsByStatus(dr,st){return dr?ALL_MONTHS.filter(m=>dr.months[m]&&dr.months[m].status===st):[];}
+function isMonthOfficial(dr,m){return !!dr&&!!dr.months[m]&&dr.months[m].status==='official';}
+function hasMonths(dr){return !!dr&&Object.keys(dr.months).length>0;}
+function canonSort(list){return [...list].sort((a,b)=>a<b?-1:a>b?1:0);}
+function genSeed(){const b=new Uint8Array(16);crypto.getRandomValues(b);return Array.from(b).map(x=>x.toString(16).padStart(2,'0')).join('');}
+async function sha256Bytes(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return new Uint8Array(buf);}
+async function seededShuffle(participants,seed,y,m){
+  const arr=canonSort(participants);
+  let counter=0;const pool=[];
+  async function nextU32(){
+    if(!pool.length){
+      const h=await sha256Bytes(seed+'|'+y+'|'+(m+1)+'|'+counter);counter++;
+      for(let i=0;i<32;i+=4)pool.push(h[i]*16777216+h[i+1]*65536+h[i+2]*256+h[i+3]);
+    }
+    return pool.shift();
+  }
+  async function randInt(n){const limit=Math.floor(4294967296/n)*n;let u;do{u=await nextU32();}while(u>=limit);return u%n;}
+  for(let i=arr.length-1;i>0;i--){const j=await randInt(i+1);const t=arr[i];arr[i]=arr[j];arr[j]=t;}
+  return arr;
+}
+function fmtTime(iso){try{return new Date(iso).toLocaleString('zh-TW',{hour12:false});}catch(e){return iso;}}
+function monthList(ms){return ms.map(m=>(m+1)+'月').join('、');}
+function monthDrawStatus(sh,y,m){
+  const dr=getDraw(sh,y),r=dr&&dr.months[m];if(!r)return null;
+  if(r.status!=='official')return 'draft';
+  if(monthHasActivity(sh,'leave',y,m))return 'locked';
+  const fo=readMonthConfig(sh,'leave',y,m).fillOrder;
+  if(!fo||!fo.length)return 'applied';
+  return JSON.stringify(fo)===JSON.stringify(r.order)?'applied':'diff';
+}
+async function applyDrawToMonths(sh,y,months){
+  const dr=getDraw(sh,y);const applied=[],locked=[];const saves=[];
+  for(const m of months){
+    if(!isMonthOfficial(dr,m))continue;
+    if(monthHasActivity(sh,'leave',y,m)){locked.push(m);continue;}
+    const order=dr.months[m].order;
+    saves.push(
+      saveSetting(mKey(sh,'leave',y,m,'fillOrder'),order),
+      saveSetting(mKey(sh,'leave',y,m,'lastRoundOrder'),[]),
+      saveSetting(mKey(sh,'leave',y,m,'standbyOrder'),[...order]),
+      saveSetting(mKey(sh,'leave',y,m,'turnIndex'),0),
+      saveSetting(mKey(sh,'leave',y,m,'lastRoundSubs'),0)
+    );
+    applied.push(m);
+  }
+  await Promise.all(saves);
+  if(y===state.year&&months.includes(state.month))applyMonthConfig();
+  return{applied,locked};
+}
+async function fetchDrawFromServer(sh,y){
+  const{data:row}=await sb.from('settings').select('value').eq('key',drawKey(sh,y)).maybeSingle();
+  return normDraw(row?row.value:null);
+}
+// 其他裝置已鎖定，但本機畫面仍顯示試抽 → 重新載入，避免覆蓋正式結果
+function staleOfficial(server,sh,y,months){
+  const local=getDraw(sh,y);
+  return months.some(m=>isMonthOfficial(server,m)&&!isMonthOfficial(local,m));
+}
+async function reloadStale(){
+  alert('部分月份已由其他裝置鎖定為正式結果，將重新載入最新資料。');
+  state.loading=true;render();await loadDB();
+}
+let _drawing=false;
+// 抽籤：未鎖定的月份＝試抽（不留紀錄）；已鎖定的月份＝正式重抽（需原因、留紀錄、立即套用）
+async function runDraw(sh,y,months,reason){
+  if(_drawing)return;_drawing=true;
+  try{
+    const ex=state.drawExclude[sh]||[];
+    const parts=canonSort(state[sh].people.filter(n=>!ex.includes(n)));
+    if(parts.length<2){alert('參加人數至少需要 2 人');return;}
+    setSS('syncing');
+    const server=await fetchDrawFromServer(sh,y);
+    if(staleOfficial(server,sh,y,months)){await reloadStale();return;}
+    const dr=server||{year:y,shift:sh,months:{},log:[]};
+    const drafted=[],redrawn=[],skipped=[];
+    for(const m of months){
+      const prev=dr.months[m],official=isMonthOfficial(dr,m);
+      if(official&&monthHasActivity(sh,'leave',y,m)){skipped.push(m);continue;}
+      const seed=genSeed(),order=await seededShuffle(parts,seed,y,m),at=new Date().toISOString();
+      if(official){
+        dr.months[m]={seed,participants:parts,order,at,status:'official',lockedAt:at};
+        dr.log.push({at,m,seed,participants:parts,order,reason:reason||'',kind:'redraw'});
+        redrawn.push(m);
+      }else{
+        dr.months[m]={seed,participants:parts,order,at,status:'draft'};
+        drafted.push(m);
+      }
+    }
+    await saveSetting(drawKey(sh,y),dr);
+    const msgs=[];
+    if(drafted.length)msgs.push('試抽完成：'+monthList(drafted)+'（尚未正式）。\n確認無誤後請按「🔒 鎖定」，才會公開並套用。');
+    if(redrawn.length){
+      const res=await applyDrawToMonths(sh,y,redrawn);
+      msgs.push('正式重抽完成並已套用：'+monthList(res.applied)+'。');
+    }
+    if(skipped.length)msgs.push('以下月份已開始填假，未重抽：'+monthList(skipped));
+    setSS('ok');state.verifyMsg=null;alert(msgs.join('\n\n'));
+  }catch(e){console.error(e);setSS('error');alert('抽籤失敗：'+(e.message||e));}
+  finally{_drawing=false;render();}
+}
+// 鎖定指定的試抽月份為正式結果：公開、寫入正式紀錄、套用
+async function lockDraw(sh,y,months){
+  if(_drawing)return;_drawing=true;
+  try{
+    setSS('syncing');
+    const dr=await fetchDrawFromServer(sh,y);
+    if(staleOfficial(dr,sh,y,months)){await reloadStale();return;}
+    const targets=months.filter(m=>dr&&dr.months[m]&&dr.months[m].status==='draft');
+    if(!targets.length){setSS('ok');alert('沒有可鎖定的試抽月份。');return;}
+    const at=new Date().toISOString();
+    for(const m of targets){
+      const r=dr.months[m];r.status='official';r.lockedAt=at;
+      dr.log.push({at,m,seed:r.seed,participants:r.participants,order:r.order,reason:'',kind:'official'});
+    }
+    await saveSetting(drawKey(sh,y),dr);
+    const res=await applyDrawToMonths(sh,y,targets);
+    setSS('ok');state.verifyMsg=null;
+    let msg='已鎖定為正式結果：'+monthList(targets)+'，並套用到休假順位。';
+    if(res.locked.length)msg+='\n\n以下月份已開始填假，未套用：'+monthList(res.locked);
+    alert(msg);
+  }catch(e){console.error(e);setSS('error');alert('鎖定失敗：'+(e.message||e));}
+  finally{_drawing=false;render();}
+}
+// 清除指定的試抽月份（正式月份不受影響）；同時還原舊版曾自動套用的月份順位
+async function resetDraw(sh,y,months){
+  if(_drawing)return;_drawing=true;
+  try{
+    setSS('syncing');
+    const dr=await fetchDrawFromServer(sh,y);
+    if(staleOfficial(dr,sh,y,months)){await reloadStale();return;}
+    const targets=months.filter(m=>dr&&dr.months[m]&&dr.months[m].status==='draft');
+    if(!targets.length){setSS('ok');alert('沒有可清除的試抽月份（已鎖定的正式結果無法清除）。');return;}
+    const saves=[];
+    for(const m of targets){
+      if(monthHasActivity(sh,'leave',y,m))continue;
+      const fo=readMonthConfig(sh,'leave',y,m).fillOrder;
+      if(fo&&JSON.stringify(fo)===JSON.stringify(dr.months[m].order)){
+        for(const f of ['fillOrder','lastRoundOrder','standbyOrder'])saves.push(saveSetting(mKey(sh,'leave',y,m,f),[]));
+        saves.push(saveSetting(mKey(sh,'leave',y,m,'turnIndex'),0),saveSetting(mKey(sh,'leave',y,m,'lastRoundSubs'),0));
+      }
+      delete dr.months[m];
+    }
+    await Promise.all(saves);
+    if(!hasMonths(dr)&&!dr.log.length){
+      await sb.from('settings').delete().eq('key',drawKey(sh,y));
+      delete state.cfg[drawKey(sh,y)];
+    }else{
+      await saveSetting(drawKey(sh,y),dr);
+    }
+    if(y===state.year)applyMonthConfig();
+    state.verifyMsg=null;setSS('ok');
+    alert('已清除試抽結果：'+monthList(targets)+'。');
+  }catch(e){console.error(e);setSS('error');alert('清除失敗：'+(e.message||e));}
+  finally{_drawing=false;render();}
+}
+async function verifyDraw(sh,y,onlyOfficial){
+  const dr=getDraw(sh,y);if(!dr)return;
+  const fails=[];let n=0;
+  for(const m of ALL_MONTHS){
+    const r=dr.months[m];if(!r)continue;
+    if(onlyOfficial&&r.status!=='official')continue;
+    const re=await seededShuffle(r.participants,r.seed,y,m);
+    n++;if(JSON.stringify(re)!==JSON.stringify(r.order))fails.push(m+1);
+  }
+  state.verifyMsg={sh,y,n,fails,at:new Date().toISOString()};
+  render();
+}
+function verifyBox(sh,y){
+  const v=state.verifyMsg;if(!v||v.sh!==sh||v.y!==y)return '';
+  return v.fails.length
+    ?'<div class="info-box info-err">⚠ 驗證不符：'+v.fails.join('、')+' 月的結果與種子重算不一致，資料可能被修改過。</div>'
+    :'<div class="info-box info-hl">✓ 驗證通過：'+v.n+' 個月全部依種子重新計算，結果完全一致（'+fmtTime(v.at)+'）</div>';
+}
+function orderChips(order){return '<div class="draw-order">'+order.map((n,i)=>'<span><b>'+(i+1)+'</b>'+n+'</span>').join('')+'</div>';}
+function drawSourceNote(sh){
+  const y=state.year,m=state.month,dr=getDraw(sh,y);
+  if(!isMonthOfficial(dr,m))return '';
+  const st=monthDrawStatus(sh,y,m);
+  if(st==='diff')return '<div class="info-box info-warn" style="font-size:12px;">⚠ 本月順位與 '+y+' 年 '+(m+1)+' 月正式抽籤結果不同（可能有人員異動或手動調整），可到「年度抽籤」重新套用。</div>';
+  return '<div class="info-box info-purple" style="font-size:12px;">🎲 本月休假順位來自 '+y+' 年 '+(m+1)+' 月正式抽籤結果</div>';
+}
+function buildDraw(sh){
+  if(state.drawYear===null)state.drawYear=state.year+(state.month>=9?1:0);
+  const y=state.drawYear,dr=getDraw(sh,y);
+  const ppl=state[sh].people,ex=state.drawExclude[sh]||[];
+  const parts=canonSort(ppl.filter(n=>!ex.includes(n)));
+  const off=monthsByStatus(dr,'official'),drafts=monthsByStatus(dr,'draft');
+  const unlocked=ALL_MONTHS.filter(m=>!off.includes(m));
+  let h='<div class="section"><div class="slabel">抽籤年度</div><div class="card month-nav"><button class="btn-icon" id="draw-prev-year"><i class="ti ti-chevron-left"></i></button><span>'+y+' 年 · '+sh+' 班休假</span><button class="btn-icon" id="draw-next-year"><i class="ti ti-chevron-right"></i></button></div></div>';
+
+  h+='<div class="info-box" style="font-size:12px;line-height:1.7;">可一次抽全年，也可在下方單獨抽任一個月。每個月先「試抽」（不公開、不套用、可重抽或清除、不留紀錄），確認後按「🔒 鎖定」才會成為正式結果：公開在總覽頁、套用到該月休假順位，且無法清除。<br>目前：已鎖定 <strong>'+off.length+'</strong> 個月，試抽中 <strong>'+drafts.length+'</strong> 個月，未抽 <strong>'+(12-off.length-drafts.length)+'</strong> 個月。</div>';
+
+  h+='<div class="section"><div class="slabel">參加名單（'+parts.length+' 人）</div><div>'
+    +ppl.map(n=>'<label class="part-row"><input type="checkbox" data-drawpart="'+n+'"'+(ex.includes(n)?'':' checked')+'>'+n+'</label>').join('')
+    +'</div><div style="font-size:11px;color:#aaa;margin-top:2px;">投入抽籤前會依文字編碼固定排序，不受上方顯示順序影響。</div></div>';
+
+  // 全年操作
+  if(drafts.length)h+='<button class="btn-draw" id="draw-lock-all" style="background:#16a34a;margin-bottom:10px;">🔒 鎖定全部試抽月份（'+drafts.length+' 個月）</button>';
+  h+='<div class="top-actions">';
+  if(unlocked.length)h+='<button class="btn" id="draw-run-all"'+(parts.length<2?' disabled':'')+'><i class="ti ti-dice-5" style="vertical-align:-2px;margin-right:4px;"></i>'+(off.length?'試抽所有未鎖定月份（'+unlocked.length+' 個月）':'試抽全年（1–12 月）')+'</button>';
+  if(hasMonths(dr))h+='<button class="btn" id="draw-verify"><i class="ti ti-shield-check" style="vertical-align:-2px;margin-right:4px;"></i>驗證</button>';
+  if(off.length)h+='<button class="btn btn-excel" id="draw-export"><i class="ti ti-file-spreadsheet" style="vertical-align:-2px;margin-right:4px;"></i>匯出正式結果</button>';
+  if(drafts.length)h+='<button class="btn btn-danger" id="draw-reset-all"><i class="ti ti-trash" style="vertical-align:-2px;margin-right:4px;"></i>清除全部試抽結果</button>';
+  h+='</div>'+verifyBox(sh,y);
+
+  // 逐月
+  h+='<div class="slabel" style="margin-top:6px;">各月份（可單獨抽籤）</div>';
+  for(const m of ALL_MONTHS){
+    const r=dr&&dr.months[m];
+    if(!r){
+      h+='<div class="draw-month"><div class="draw-month-head"><span class="draw-month-title">'+(m+1)+' 月</span><span class="ps ps-wait">未抽籤</span><button class="btn-mini" data-drawm="'+m+'"'+(parts.length<2?' disabled':'')+'>🎲 試抽此月</button></div></div>';
+      continue;
+    }
+    const st=monthDrawStatus(sh,y,m);
+    let head='<span class="draw-month-title">'+(m+1)+' 月</span>';
+    if(st==='draft'){
+      head+='<span class="ps ps-extra">試抽</span>'
+        +'<button class="btn-mini" data-drawm="'+m+'">重新試抽</button>'
+        +'<button class="btn-mini" data-resetm="'+m+'" style="margin-left:6px;color:#dc2626;border-color:#fca5a5;">清除</button>'
+        +'<button class="btn-mini" data-lockm="'+m+'" style="margin-left:6px;color:#16a34a;border-color:#86efac;font-weight:600;">🔒 鎖定</button>';
+    }else{
+      head+=(st==='locked'?'<span class="ps ps-done">填假已開始</span>':st==='diff'?'<span class="ps ps-extra">與目前順位不同</span>':'<span class="ps ps-now">🔒 正式・已套用</span>')
+        +(st==='diff'?'<button class="btn-mini" data-reapplym="'+m+'">重新套用</button>':'')
+        +'<button class="btn-mini" data-redrawm="'+m+'"'+(st==='locked'?' disabled':'')+(st==='diff'?' style="margin-left:6px;"':'')+'>重抽此月</button>';
+    }
+    h+='<div class="draw-month"><div class="draw-month-head">'+head+'</div>'+orderChips(r.order)
+      +'<div class="seed">種子 '+r.seed+(r.status==='official'?' · 鎖定於 '+fmtTime(r.lockedAt):'')+'</div></div>';
+  }
+
+  if(dr&&dr.log.length){
+    const log=dr.log.slice().reverse();
+    h+='<div class="section" style="margin-top:16px;"><div class="slabel">正式抽籤紀錄（共 '+log.length+' 筆，公開保存）</div><div class="card" style="padding:6px 14px;">'
+      +log.map(l=>'<div class="log-row"><b>'+fmtTime(l.at)+'</b>　'+(l.m+1)+' 月　'+(l.kind==='redraw'?'<span style="color:#dc2626;">重抽</span>　原因：'+(l.reason||'—'):'正式鎖定')+'<div class="seed" style="margin-top:2px;">種子 '+l.seed+'</div></div>').join('')
+      +'</div></div>';
+  }
+  return h;
+}
+function buildDrawPublic(sh,y){
+  const dr=getDraw(sh,y),off=monthsByStatus(dr,'official');
+  if(!off.length)return ''; // 試抽結果不公開
+  const redraws=dr.log.filter(l=>l.kind==='redraw');
+  let h='<div style="border-left:3px solid #f59e0b;padding-left:10px;margin-bottom:20px;">'
+    +'<div class="lt-section-title">🎲 '+y+' 年度休假抽籤結果（'+sh+' 班）</div>'
+    +'<div class="info-box" style="font-size:12px;line-height:1.7;">以下為已正式鎖定的月份（共 '+off.length+' 個月）。每月以公開種子經 SHA-256 運算抽出順位，按「驗證」會在你的裝置上用種子重新計算，確認結果未被更動。'+(redraws.length?'鎖定後共有 '+redraws.length+' 次重抽紀錄。':'鎖定後無重抽紀錄。')+'</div>'
+    +'<div class="top-actions"><button class="btn" id="draw-verify-pub"><i class="ti ti-shield-check" style="vertical-align:-2px;margin-right:4px;"></i>驗證抽籤結果</button></div>'
+    +verifyBox(sh,y);
+  for(const m of off){
+    const r=dr.months[m];
+    h+='<div class="draw-month"><div class="draw-month-head"><span class="draw-month-title">'+(m+1)+' 月</span></div>'+orderChips(r.order)+'<div class="seed">種子 '+r.seed+' · 鎖定於 '+fmtTime(r.lockedAt)+'</div></div>';
+  }
+  if(redraws.length){
+    h+='<div class="slabel" style="margin-top:10px;">重抽紀錄</div><div class="card" style="padding:6px 14px;">'
+      +redraws.map(l=>'<div class="log-row"><b>'+fmtTime(l.at)+'</b>　'+(l.m+1)+' 月　原因：'+(l.reason||'—')+'</div>').join('')+'</div>';
+  }
+  return h+'</div>';
+}
+function exportDrawExcel(sh,y){
+  const dr=getDraw(sh,y),off=monthsByStatus(dr,'official');if(!off.length)return;
+  const wb=XLSX.utils.book_new();
+  let maxN=0;for(const m of off)maxN=Math.max(maxN,dr.months[m].order.length);
+  const s1=[['月份',...Array.from({length:maxN},(_,i)=>'順位'+(i+1)),'種子','鎖定時間']];
+  for(const m of off){const r=dr.months[m];s1.push([(m+1)+'月',...r.order,...Array(maxN-r.order.length).fill(''),r.seed,fmtTime(r.lockedAt)]);}
+  const ws1=XLSX.utils.aoa_to_sheet(s1);ws1['!cols']=[{wch:6},...Array(maxN).fill({wch:9}),{wch:34},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,ws1,'抽籤結果');
+  const s2=[['時間','月份','類型','原因','種子','參加名單（固定排序）','抽籤結果']];
+  for(const l of dr.log)s2.push([fmtTime(l.at),(l.m+1)+'月',l.kind==='redraw'?'重抽':'正式鎖定',l.reason||'',l.seed,l.participants.join('、'),l.order.join('、')]);
+  const ws2=XLSX.utils.aoa_to_sheet(s2);ws2['!cols']=[{wch:20},{wch:6},{wch:8},{wch:20},{wch:34},{wch:40},{wch:40}];
+  XLSX.utils.book_append_sheet(wb,ws2,'抽籤紀錄');
+  XLSX.writeFile(wb,'休假抽籤_'+sh+'班_'+y+'年.xlsx');
+}
+function confirmLock(sh,y,months){
+  if(!confirm('確定將 '+sh+' 班 '+y+' 年的以下月份鎖定為「正式結果」？\n'+monthList(months)+'\n\n鎖定後：\n• 結果會公開在總覽頁，所有人可查看與驗證\n• 自動套用到該月份的休假順位\n• 無法清除；重抽需填寫原因並公開記錄'))return false;
+  const typed=prompt('請輸入「鎖定」兩字以確認：');
+  if(typed===null)return false;
+  if(typed.trim()!=='鎖定'){alert('輸入不符，未鎖定。');return false;}
+  return true;
+}
+function bindDrawEvents(){
+  const sh=state.shift;
+  document.querySelectorAll('[data-admintab]').forEach(b=>b.addEventListener('click',()=>{state.adminTab=b.dataset.admintab;render();}));
+  const py=document.getElementById('draw-prev-year');if(py)py.addEventListener('click',()=>{state.drawYear--;state.verifyMsg=null;render();});
+  const ny=document.getElementById('draw-next-year');if(ny)ny.addEventListener('click',()=>{state.drawYear++;state.verifyMsg=null;render();});
+  document.querySelectorAll('[data-drawpart]').forEach(cb=>cb.addEventListener('change',()=>{
+    const n=cb.dataset.drawpart,ex=state.drawExclude[sh]||(state.drawExclude[sh]=[]);
+    if(cb.checked)state.drawExclude[sh]=ex.filter(x=>x!==n);else if(!ex.includes(n))ex.push(n);
+    render();
+  }));
+  const runAll=document.getElementById('draw-run-all');
+  if(runAll)runAll.addEventListener('click',()=>{
+    const y=state.drawYear,dr=getDraw(sh,y);
+    const unlocked=ALL_MONTHS.filter(m=>!isMonthOfficial(dr,m));
+    if(monthsByStatus(dr,'draft').length&&!confirm('會重新試抽所有未鎖定的月份，並覆蓋目前的試抽結果，確定？'))return;
+    runDraw(sh,y,unlocked,'');
+  });
+  document.querySelectorAll('[data-drawm]').forEach(b=>b.addEventListener('click',()=>runDraw(sh,state.drawYear,[parseInt(b.dataset.drawm)],'')));
+  document.querySelectorAll('[data-lockm]').forEach(b=>b.addEventListener('click',()=>{
+    const y=state.drawYear,m=parseInt(b.dataset.lockm);
+    if(confirmLock(sh,y,[m]))lockDraw(sh,y,[m]);
+  }));
+  const lockAll=document.getElementById('draw-lock-all');
+  if(lockAll)lockAll.addEventListener('click',()=>{
+    const y=state.drawYear,ms=monthsByStatus(getDraw(sh,y),'draft');
+    if(confirmLock(sh,y,ms))lockDraw(sh,y,ms);
+  });
+  document.querySelectorAll('[data-resetm]').forEach(b=>b.addEventListener('click',()=>{
+    const y=state.drawYear,m=parseInt(b.dataset.resetm);
+    if(!confirm('清除 '+(m+1)+' 月的試抽結果？不會留下任何紀錄。'))return;
+    resetDraw(sh,y,[m]);
+  }));
+  const resetAll=document.getElementById('draw-reset-all');
+  if(resetAll)resetAll.addEventListener('click',()=>{
+    const y=state.drawYear,ms=monthsByStatus(getDraw(sh,y),'draft');
+    if(!confirm('清除以下月份的試抽結果？不會留下任何紀錄。\n'+monthList(ms)+'\n\n（已鎖定的正式月份不受影響）'))return;
+    resetDraw(sh,y,ms);
+  });
+  document.querySelectorAll('[data-redrawm]').forEach(b=>b.addEventListener('click',()=>{
+    const y=state.drawYear,m=parseInt(b.dataset.redrawm);
+    if(monthHasActivity(sh,'leave',y,m)){alert((m+1)+' 月已開始填假，無法重抽。');return;}
+    const reason=prompt('重抽 '+(m+1)+' 月（正式結果）：請輸入原因，將公開記錄');
+    if(reason===null)return;
+    if(!reason.trim()){alert('重抽正式結果必須填寫原因');return;}
+    runDraw(sh,y,[m],reason.trim());
+  }));
+  document.querySelectorAll('[data-reapplym]').forEach(b=>b.addEventListener('click',async()=>{
+    const y=state.drawYear,m=parseInt(b.dataset.reapplym);
+    if(!confirm('將 '+(m+1)+' 月休假順位改回正式抽籤結果？'))return;
+    setSS('syncing');await applyDrawToMonths(sh,y,[m]);setSS('ok');render();
+  }));
+  const dv=document.getElementById('draw-verify');if(dv)dv.addEventListener('click',()=>verifyDraw(sh,state.drawYear,false));
+  const dvp=document.getElementById('draw-verify-pub');if(dvp)dvp.addEventListener('click',()=>verifyDraw(sh,state.year,true));
+  const de=document.getElementById('draw-export');if(de)de.addEventListener('click',()=>exportDrawExcel(sh,state.drawYear));
+}
+
 function exportExcel(){
   const sh=state.shift,y=state.year,m=state.month,dim=getDIM(y,m);
   const wb=XLSX.utils.book_new();
